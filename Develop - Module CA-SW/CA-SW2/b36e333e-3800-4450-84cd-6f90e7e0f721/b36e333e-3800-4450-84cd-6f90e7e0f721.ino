@@ -31,7 +31,7 @@ const int mqtt_port = 2502;
 const char *mqtt_user = "chika";
 const char *mqtt_pass = "2502";
 
-//Variables - ESP12F - ESP8266MOD:
+//Variables - ESP12F:
 /*************************************     NOTE PINs    ******************************************
  * @@PINs CAN NOT use:
  * @REST: Pin 1.
@@ -64,13 +64,14 @@ const char *mqtt_pass = "2502";
  * 
 *************************************************************************************************/
 
-int button_1 = 4;	//@PIN_19
-int button_2 = 5;	//@PIN_20
+int button_1 = 4;				//@PIN_19
+int button_2 = 5;				//@PIN_20
 
-int relay_1 = 16;	//@PIN_4
-int relay_2 = 14;	//@PIN_5
+int control_1 = 16;				//@PIN_4
+int control_2 = 14;				//@PIN_5
 
-
+int stateLED_control_1 = 10;	//@PIN_12
+int stateLED_control_2 = 2;		//@PIN_17
 
 //Variables - MQTT:
 bool state_button_1 = 0;
@@ -113,10 +114,15 @@ void setup()
 {
 	pinMode(button_1, INPUT);
 	pinMode(button_2, INPUT);
-	pinMode(relay_1, OUTPUT);
-	pinMode(relay_2, OUTPUT);
+	
+	pinMode(control_1, OUTPUT);
+	pinMode(control_2, OUTPUT);
+	pinMode(stateLED_control_1, OUTPUT);
+	pinMode(stateLED_control_2, OUTPUT);
+	
 	Serial.begin(115200);
 	setup_Wifi();
+	
 //	WiFi.setAutoConnect(true);
 //	WiFi.setAutoReconnect(true);
 //	delay(10000);
@@ -165,7 +171,7 @@ void loop()
 		if (check_Button_1)
 		{
 			Serial.println("\nButton 1 - Clicked!");
-			digitalWrite(relay_1, !state_button_1);
+			digitalWrite(control_1, !state_button_1);
 			if (state_button_1)
 				client.publish(CA_SW2_1, "1");
 			else
@@ -179,7 +185,7 @@ void loop()
 		if (check_Button_2)
 		{
 			Serial.println("\nButton 2 - Clicked!");
-			digitalWrite(relay_2, !state_button_2);
+			digitalWrite(control_2, !state_button_2);
 			if (state_button_1)
 				client.publish(CA_SW2_2, "1");
 			else
@@ -213,12 +219,12 @@ void callback(char *topic, byte *payload, unsigned int length)
 		switch ((char)payload[0])
 		{
 			case '1':
-			digitalWrite(relay_1, HIGH);
+			digitalWrite(control_1, HIGH);
 			Serial.println("Change online CA-SW2-1 to ON");
 			state_button_1 = true;
 			break;
 			case '0':
-			digitalWrite(relay_1, LOW);
+			digitalWrite(control_1, LOW);
 			Serial.println("Change online CA-SW2-1 to OFF");
 			state_button_1 = false;
 			break;
@@ -228,18 +234,20 @@ void callback(char *topic, byte *payload, unsigned int length)
 		switch ((char)payload[0])
 		{
 			case '1':
-			digitalWrite(relay_2, HIGH);
+			digitalWrite(control_2, HIGH);
 			Serial.println("Change online CA-SW2-2 to ON");
 			state_button_1 = true;
 			break;
 			case '0':
-			digitalWrite(relay_2, LOW);
+			digitalWrite(control_2, LOW);
 			Serial.println("Change online CA-SW2-2 to OFF");
 			state_button_1 = false;
 			break;
 		}
    
 }
+
+
 /**********************************************************************************
  * @func  reconnect_mqtt()
  * 
@@ -274,6 +282,8 @@ void reconnect_mqtt()
         }
     }
 }
+
+
 /**********************************************************************************
  * @func  isButton_Click(int GPIO_to_read)
  * 
@@ -291,6 +301,8 @@ int isButton_Click(int GPIO_to_read)
     }
     return out;
 }
+
+
 /**********************************************************************************
  * @func  SmartConfig
  * 
