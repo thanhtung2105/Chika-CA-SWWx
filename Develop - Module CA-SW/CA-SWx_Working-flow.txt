@@ -1,0 +1,13 @@
+1. Mua thiết bị về - lắp đặt thiết bị như hướng dẫn.
+2. Sau khi lắp đặt có thể sử dụng được ngay như các loại công tắc thông thường.
+3. Để vào chế độ thiết lập mạng cho công tắc, ta "Nhấn giữ nút bấm số 1 trong khoảng 7s" 
+-> đèn công tắc chớp nháy nhanh liên tục (có thể sử dụng chế độ này để thay đổi thông tin Wifi luôn).
+4. Bắt đầu thực hiện thiết lập "SmartConfig từ ứng dụng di động" :
+:	- Nếu SmartConfig thành công, đèn công tắc sẽ chớp nháy chậm hơn để thực hiện quá trình kết nối tới máy chủ và Ứng dụng điện thoại (kết nối MQTT):
+		+ Nếu Kết nối máy chủ thất bại, sau thời gian timeout khoảng 30s, 2 đèn công tắc sẽ báo đỏ - người dùng cần "Nhấn giữ lại nút bấm số 1 khoảng 3s" để thực hiện liên kết lại với máy chủ, nếu không thành công thì liên hệ CSKH.
+		+ Nếu việc thiết lập thuận lợi và thành công, 2 đèn công tắc sẽ báo xanh, và việc sử dụng cũng như điều khiển sẽ diễn ra bình thường.
+	- Nếu SmartConfig không thành công, sau khoảng thời gian timeout cho người dùng thiết lập khoảng 120s, công tắc sẽ tự chuyển về chế độ hoạt động offline bình thường.
+5. Để thoát chế độ thiết lập mạng cho công tắc, ta "Nhấn giữ nút bấm số 2 trong khoảng 3s".
+
+6. Trong quá trình hoạt động bình thường, nếu chẳng may gia đình mất điện, công tắc sau khi bật lại sẽ hoạt động bình thường offline. Công tắc sẽ tự Connect lại với mạng trước đó nếu như mạng có hoạt động và mạng không bị
+mất điện. Nếu chẳng may mạng cũng bị mất thì bắt buộc ta phải thực hiện SmartConfig lại từ đầu cho bộ công tắc.
