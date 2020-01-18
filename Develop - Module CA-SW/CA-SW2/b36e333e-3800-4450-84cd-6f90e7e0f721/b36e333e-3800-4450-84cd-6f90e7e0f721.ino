@@ -10,6 +10,7 @@
 /*******************************************************************************
  *  INCLUDES
  ******************************************************************************/
+ 
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
@@ -18,15 +19,15 @@
  ******************************************************************************/
 //Wifi information - Just use for test wifi of module when SmartConfig meet failure
 
-const char *ssid = "Thanh Tung";
-const char *password = "1357908642";
+const char *ssid = "FPT Shin & Trum";
+const char *password = "26101970";
 
 //Information of CA-SW2-1 and CA-SW2-2:
 const char *CA_SW2_1 = "0c38a97d-1564-4707-935c-18b4e9bcb0db";
 const char *CA_SW2_2 = "7f704fdf-fa4b-44e2-b359-5ef19294196a";
 
 //Config MQTT broker information:
-const char *mqtt_server = "14.169.230.167";
+const char *mqtt_server = "chika.gq";
 const int mqtt_port = 2502;
 const char *mqtt_user = "chika";
 const char *mqtt_pass = "2502";
@@ -74,12 +75,12 @@ int stateLED_control_1 = 10;	//@PIN_12
 int stateLED_control_2 = 2;		//@PIN_17
 
 //Variables - MQTT:
-bool state_button_1 = 0;
-bool state_button_2 = 0;
+bool stateDEVICE_control_1 = 0;
+bool stateDEVICE_control_2 = 0;
 
 //Variables - Func:
 unsigned long previousMillis = 0;
-long interval = 500;
+long interval = 200;
 
 /*******************************************************************************
  * @func    Setup range
@@ -105,7 +106,7 @@ void setup_Wifi()
     Serial.println(WiFi.localIP());
 }
 
-//Setup MQTT - Wifi ESP12F - ESP8266MOD:
+//Setup MQTT - Wifi ESP12F:
 WiFiClient esp_12F;
 PubSubClient client(esp_12F);
 
@@ -119,6 +120,8 @@ void setup()
 	pinMode(control_2, OUTPUT);
 	pinMode(stateLED_control_1, OUTPUT);
 	pinMode(stateLED_control_2, OUTPUT);
+	pinMode(stateDEVICE_control_1, OUTPUT);
+	pinMode(stateDEVICE_control_2, OUTPUT);
 	
 	Serial.begin(115200);
 	setup_Wifi();
@@ -140,7 +143,7 @@ void setup()
 		Serial.println(WiFi.localIP());
 //	}
  	
-  Serial.println("Trying connect MQTT ...");
+  	Serial.println("Trying connect MQTT ...");
 	client.setServer(mqtt_server, mqtt_port);
 	client.setCallback(callback);
 }
@@ -153,50 +156,47 @@ void setup()
 *************************************************************************************************/
 //------------- MAIN LOOP -------------
 void loop()
-{
-	int check_Button_1 = isButton_Click(button_1);
-	int check_Button_2 = (button_2);
- 
+{ 
 	if (!client.connected())
 	{
 		reconnect_mqtt();
 	}
 	client.loop();
-	
-	unsigned long currentMillis = millis();
-	if (currentMillis - previousMillis > interval)
-	{
-		previousMillis = currentMillis;
-		
+
+	bool check_Button_1 = isButton_Click(button_1);
+	bool check_Button_2 = isButton_Click(button_2);
+			
 		if (check_Button_1)
 		{
 			Serial.println("\nButton 1 - Clicked!");
-			digitalWrite(control_1, !state_button_1);
-			if (state_button_1)
-				client.publish(CA_SW2_1, "1");
-			else
+			digitalWrite(stateLED_control_1, stateDEVICE_control_1);
+			digitalWrite(control_1, !stateDEVICE_control_1);
+			if (stateDEVICE_control_1)
 				client.publish(CA_SW2_1, "0");
+			else
+				client.publish(CA_SW2_1, "1");
 			
-			state_button_1 = !state_button_1;
+			stateDEVICE_control_1 = !stateDEVICE_control_1;
 			Serial.print("Relay 1 change state to: ");
-			Serial.print(state_button_1);
+			Serial.print(stateDEVICE_control_1);
 		}
 		
 		if (check_Button_2)
 		{
 			Serial.println("\nButton 2 - Clicked!");
-			digitalWrite(control_2, !state_button_2);
-			if (state_button_1)
-				client.publish(CA_SW2_2, "1");
-			else
+			digitalWrite(stateLED_control_2, stateDEVICE_control_2);
+			digitalWrite(control_2, !stateDEVICE_control_2);
+			if (stateDEVICE_control_2)
 				client.publish(CA_SW2_2, "0");
+			else
+				client.publish(CA_SW2_2, "1");
 			
-			state_button_2 = !state_button_2;
+			stateDEVICE_control_2 = !stateDEVICE_control_2;
 			Serial.print("Relay 2 change state to: ");
-			Serial.print(state_button_2);
+			Serial.print(stateDEVICE_control_2);
 		}
-	}
-	delay(500);
+
+	delay(100);
 }
 
 //------------- OTHER FUNCTIONS -------------
@@ -221,12 +221,14 @@ void callback(char *topic, byte *payload, unsigned int length)
 			case '1':
 			digitalWrite(control_1, HIGH);
 			Serial.println("Change online CA-SW2-1 to ON");
-			state_button_1 = true;
+			stateDEVICE_control_1 = true;
+			digitalWrite(stateLED_control_1,stateDEVICE_control_1);
 			break;
 			case '0':
 			digitalWrite(control_1, LOW);
 			Serial.println("Change online CA-SW2-1 to OFF");
-			state_button_1 = false;
+			stateDEVICE_control_1 = false;
+			digitalWrite(stateLED_control_1,stateDEVICE_control_1);
 			break;
 		}
    
@@ -236,12 +238,14 @@ void callback(char *topic, byte *payload, unsigned int length)
 			case '1':
 			digitalWrite(control_2, HIGH);
 			Serial.println("Change online CA-SW2-2 to ON");
-			state_button_1 = true;
+			stateDEVICE_control_2 = true;
+			digitalWrite(stateLED_control_2,stateDEVICE_control_2);
 			break;
 			case '0':
 			digitalWrite(control_2, LOW);
 			Serial.println("Change online CA-SW2-2 to OFF");
-			state_button_1 = false;
+			stateDEVICE_control_2 = false;
+			digitalWrite(stateLED_control_2,stateDEVICE_control_2);
 			break;
 		}
    
@@ -268,8 +272,6 @@ void reconnect_mqtt()
         {
             Serial.println("Connected");
 
-            client.publish(CA_SW2_1, "1");
-            client.publish(CA_SW2_2, "1");
             client.subscribe(CA_SW2_1);
             client.subscribe(CA_SW2_2);
         }
@@ -294,9 +296,9 @@ void reconnect_mqtt()
 int isButton_Click(int GPIO_to_read)
 {
     int out = 0;
-    while (digitalRead(GPIO_to_read) == 1)
+    while (digitalRead(GPIO_to_read) == 0)
     {
-        delay(150);
+        delay(200);
         out = 1;
     }
     return out;
