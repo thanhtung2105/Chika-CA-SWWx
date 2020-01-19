@@ -13,6 +13,9 @@
  
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
+#include <Ticker.h>
+
+Ticker ticker;
 
 /*******************************************************************************
  *  VALUE DEFINITION
@@ -75,8 +78,9 @@ int stateLED_control_1 = 10;	//@PIN_12
 int stateLED_control_2 = 2;		//@PIN_17
 
 //Variables - MQTT:
-bool stateDEVICE_control_1 = 0;
-bool stateDEVICE_control_2 = 0;
+boolean stateDEVICE_control_1 = false;
+boolean stateDEVICE_control_2 = false;
+boolean smartConfigStart =  false;
 
 //Variables - Func:
 unsigned long previousMillis = 0;
@@ -113,8 +117,14 @@ PubSubClient client(esp_12F);
 //General setup:
 void setup()
 {
+	Serial.begin(115200);
+	Serial.println("_ CA-SW2 say hello to your home _");
 	pinMode(button_1, INPUT);
 	pinMode(button_2, INPUT);
+	
+	WiFi.setAutoConnect(true);
+	WiFi.setAutoReconnect(true);
+	WiFi.mode(WIFI_STA);
 	
 	pinMode(control_1, OUTPUT);
 	pinMode(control_2, OUTPUT);
@@ -123,25 +133,21 @@ void setup()
 	pinMode(stateDEVICE_control_1, OUTPUT);
 	pinMode(stateDEVICE_control_2, OUTPUT);
 	
-	Serial.begin(115200);
-	setup_Wifi();
-	
-//	WiFi.setAutoConnect(true);
-//	WiFi.setAutoReconnect(true);
-//	delay(10000);
-/*
+	delay(7000);
 	if(!WiFi.isConnected())
 	{
 		startSmartConfig();
 	}
 	else
 	{
- */
+		digitalWrite(stateLED_control_1, HIGH);
+		digitalWrite(stateLED_control_2, HIGH);
 		Serial.println("WIFI CONNECTED");
 		Serial.println(WiFi.SSID());
 		Serial.print("IP: ");
 		Serial.println(WiFi.localIP());
-//	}
+	}
+//	setup_Wifi();
  	
   	Serial.println("Trying connect MQTT ...");
 	client.setServer(mqtt_server, mqtt_port);
@@ -157,14 +163,15 @@ void setup()
 //------------- MAIN LOOP -------------
 void loop()
 { 
+//	pressModify();
 	if (!client.connected())
 	{
 		reconnect_mqtt();
 	}
 	client.loop();
 
-	bool check_Button_1 = isButton_Click(button_1);
-	bool check_Button_2 = isButton_Click(button_2);
+	boolean check_Button_1 = isButton_Click(button_1);
+	boolean check_Button_2 = isButton_Click(button_2);
 			
 		if (check_Button_1)
 		{
@@ -200,6 +207,16 @@ void loop()
 }
 
 //------------- OTHER FUNCTIONS -------------
+/*
+void pressModify()
+{
+	if (digitalRead(button_1) == 0)
+	{
+		
+	}
+}
+*/
+
 //Callback:
 void callback(char *topic, byte *payload, unsigned int length)
 {
@@ -304,6 +321,14 @@ int isButton_Click(int GPIO_to_read)
     return out;
 }
 
+void blinking()
+{
+  bool state_1 = digitalRead(stateLED_control_1);
+  bool state_2 = digitalRead(stateLED_control_2);
+  digitalWrite(stateLED_control_1,!state_1);
+  digitalWrite(stateLED_control_2,!state_2);
+}
+
 
 /**********************************************************************************
  * @func  SmartConfig
@@ -318,17 +343,21 @@ boolean startSmartConfig(){
   Serial.println("Smart Config Start");
   WiFi.beginSmartConfig();
   delay(500);
+  ticker.attach(0.1, blinking);
   while(WiFi.status() != WL_CONNECTED){
     t++;
     Serial.print(".");
     delay(500);
     if(t > 120){
-      Serial.println("Smart Config Fail");;
+      Serial.println("Smart Config Fail");
+	  smartConfigStart = false;
+	  ticker.attach(0.5, blinking);
       delay(3000);
       exitSmartConfig();
       return false;
     }
   }
+  smartConfigStart = true;
   Serial.println("WIFI CONNECTED");
   Serial.print("IP: ");
   Serial.println(WiFi.localIP());
@@ -338,5 +367,8 @@ boolean startSmartConfig(){
 }
 
 void exitSmartConfig(){
-  WiFi.stopSmartConfig();
+	WiFi.stopSmartConfig();
+	ticker.detach();
+	digitalWrite(stateLED_control_1, LOW);
+	digitalWrite(stateLED_control_2, LOW);
 }
