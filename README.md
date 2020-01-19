@@ -3,7 +3,8 @@
 My Graduate Thesis project work co-operate with Chika Corporation 智家 (チカ).
 
 📍 With 4 members (Thanh Tung, Sy Nguyen, Tai Phuc, Hoai Phuc), Chika Smart Home Joint Stock Company - 智 家 (チ カ) specializes in developing  solutions and devices for smart homes.
-👉 Product list:
+
+👉 Some product list:
 
 - Infrared controller: CA - IRX.
 
