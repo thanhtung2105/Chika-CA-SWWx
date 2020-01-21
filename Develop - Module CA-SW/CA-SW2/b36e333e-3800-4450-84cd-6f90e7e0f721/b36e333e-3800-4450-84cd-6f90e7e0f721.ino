@@ -22,8 +22,8 @@ Ticker ticker;
  ******************************************************************************/
 //Wifi information - Just use for test wifi of module when SmartConfig meet failure
 
-const char *ssid = "FPT Shin & Trum";
-const char *password = "26101970";
+const char *ssid = "username wifi";
+const char *password = "***********";
 
 //Information of CA-SW2-1 and CA-SW2-2:
 const char *CA_SW2_1 = "0c38a97d-1564-4707-935c-18b4e9bcb0db";
@@ -104,7 +104,7 @@ void setup_Wifi()
 		delay(500);
 		Serial.print(".");
 	}
-	Serial.println("");
+	  Serial.println("");
     Serial.println("WiFi connected!");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
@@ -118,7 +118,7 @@ PubSubClient client(esp_12F);
 void setup()
 {
 	Serial.begin(115200);
-	Serial.println("_ CA-SW2 say hello to your home _");
+	Serial.println("\n\n_ CA-SW2 say hello to your home _");
 	pinMode(button_1, INPUT);
 	pinMode(button_2, INPUT);
 	
@@ -132,10 +132,14 @@ void setup()
 	pinMode(stateLED_control_2, OUTPUT);
 	pinMode(stateDEVICE_control_1, OUTPUT);
 	pinMode(stateDEVICE_control_2, OUTPUT);
-	
+
+//  setup_Wifi();
+  
 	delay(7000);
 	if(!WiFi.isConnected())
 	{
+    digitalWrite(stateLED_control_1, HIGH);
+    digitalWrite(stateLED_control_2, LOW);
 		startSmartConfig();
 	}
 	else
@@ -147,9 +151,8 @@ void setup()
 		Serial.print("IP: ");
 		Serial.println(WiFi.localIP());
 	}
-//	setup_Wifi();
  	
-  	Serial.println("Trying connect MQTT ...");
+  Serial.println("Trying connect MQTT ...");
 	client.setServer(mqtt_server, mqtt_port);
 	client.setCallback(callback);
 }
@@ -164,11 +167,14 @@ void setup()
 void loop()
 { 
 //	pressModify();
-	if (!client.connected())
+	if (WiFi.status() == WL_CONNECTED)
 	{
+	  if(!client.connected())	{
 		reconnect_mqtt();
 	}
+  else
 	client.loop();
+	}
 
 	boolean check_Button_1 = isButton_Click(button_1);
 	boolean check_Button_2 = isButton_Click(button_2);
