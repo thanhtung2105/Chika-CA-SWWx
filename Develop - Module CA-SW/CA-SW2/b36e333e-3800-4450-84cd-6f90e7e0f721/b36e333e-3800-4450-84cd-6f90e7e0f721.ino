@@ -71,8 +71,10 @@ const char *mqtt_pass = "2502";
 int button_1 = 4;				//@PIN_19
 int button_2 = 5;				//@PIN_20
 
+int button_smartConfig = 12;	//@PIN_6
+
 int control_1 = 16;				//@PIN_4
-int control_2 = 14;				//@PIN_5
+int control_2 = 14;				//@PIN_5			
 
 int stateLED_control_1 = 10;	//@PIN_12
 int stateLED_control_2 = 2;		//@PIN_17
@@ -81,6 +83,11 @@ int stateLED_control_2 = 2;		//@PIN_17
 boolean stateDEVICE_control_1 = false;
 boolean stateDEVICE_control_2 = false;
 boolean smartConfigStart =  false;
+boolean buttonActive = false;
+boolean longPressActive= false;
+
+unsigned int buttonTimer = 0;
+unsigned int longPressTime = 5000;
 
 //Variables - Func:
 unsigned long previousMillis = 0;
@@ -121,6 +128,7 @@ void setup()
 	Serial.println("\n\n_ CA-SW2 say hello to your home _");
 	pinMode(button_1, INPUT);
 	pinMode(button_2, INPUT);
+  pinMode(button_smartConfig, INPUT);
 	
 	WiFi.setAutoConnect(true);
 	WiFi.setAutoReconnect(true);
@@ -152,7 +160,7 @@ void setup()
 		Serial.println(WiFi.localIP());
 	}
  	
-  Serial.println("Trying connect MQTT ...");
+	Serial.println("Trying connect MQTT ...");
 	client.setServer(mqtt_server, mqtt_port);
 	client.setCallback(callback);
 }
@@ -166,13 +174,16 @@ void setup()
 //------------- MAIN LOOP -------------
 void loop()
 { 
-//	pressModify();
+  int a = digitalRead(button_smartConfig);
+  Serial.println(a);
+	pressModify();
+	
 	if (WiFi.status() == WL_CONNECTED)
 	{
 	  if(!client.connected())	{
 		reconnect_mqtt();
 	}
-  else
+	else
 	client.loop();
 	}
 
@@ -213,15 +224,38 @@ void loop()
 }
 
 //------------- OTHER FUNCTIONS -------------
-/*
 void pressModify()
 {
-	if (digitalRead(button_1) == 0)
+	if (digitalRead(button_smartConfig) == HIGH) 
 	{
-		
-	}
+		Serial.println("Starting smart config ...");
+		Serial.println(digitalRead(button_smartConfig));
+		if (buttonActive == false) 
+		{
+				buttonActive = true;
+				buttonTimer = millis();
+		}
+    if ((millis() - buttonTimer > longPressTime) && (longPressActive == false)) 
+		{
+			longPressActive = true;
+			digitalWrite(stateLED_control_1, HIGH);
+			digitalWrite(stateLED_control_2, LOW);
+			startSmartConfig();
+		}
+	} 
+	else 
+	{
+    if (buttonActive == true) 
+	{
+      if (longPressActive == true) 
+	  {
+        longPressActive = false;
+      } 
+      buttonActive = false;
+    }
+  }
 }
-*/
+
 
 //Callback:
 void callback(char *topic, byte *payload, unsigned int length)
