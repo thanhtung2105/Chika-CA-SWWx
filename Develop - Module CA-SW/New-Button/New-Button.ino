@@ -28,9 +28,7 @@ void loop()
     if(check_Button_1 == 1)
   {
     Serial.println("\nButton 1 - Clicked!");
-    digitalWrite(stateLED_control_1, stateDEVICE_control_1);
-    digitalWrite(control_1, !stateDEVICE_control_1);
-    
+    digitalWrite(stateLED_control_1, stateDEVICE_control_1);    
     stateDEVICE_control_1 = !stateDEVICE_control_1;
   }
  
@@ -38,8 +36,6 @@ void loop()
   {
     Serial.println("\nButton 2 - Clicked!");
     digitalWrite(stateLED_control_2, stateDEVICE_control_2);
-    digitalWrite(control_2, !stateDEVICE_control_2);
-    
     stateDEVICE_control_2 = !stateDEVICE_control_2;
   }
 
