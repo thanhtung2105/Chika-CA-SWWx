@@ -21,7 +21,7 @@ My Graduate Thesis project work co-operate with Chika Corporation 智家 (チカ
 
 ![IMG_7618](https://user-images.githubusercontent.com/48848418/73607983-a66ec900-45ef-11ea-8e45-5e7d2800220e.JPG)
 
-![IMG_7617](https://user-images.githubusercontent.com/48848418/73607979-95be5300-45ef-11ea-8893-c2a4d72c3d3d.JPG)
+![IMG_7619](https://user-images.githubusercontent.com/48848418/73607999-ed5cbe80-45ef-11ea-9c76-d7b155ba4b18.JPG)
 
 ![IMG_7620](https://user-images.githubusercontent.com/48848418/73607981-9a830700-45ef-11ea-85c3-f1f489b9ff5f.JPG)
 
