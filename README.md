@@ -13,7 +13,17 @@ My Graduate Thesis project work co-operate with Chika Corporation 智家 (チカ
 - Central control unit: CA - HC.
 
 
-
 ![image](https://user-images.githubusercontent.com/48848418/72683184-a8249100-3b07-11ea-97ea-71700537be0d.png)
+
+⚙️ My first sample product - CA-SW2 💎
+
+![IMG_7612](https://user-images.githubusercontent.com/48848418/73607969-80e1bf80-45ef-11ea-978d-6b028667aa15.JPG)
+
+![IMG_7618](https://user-images.githubusercontent.com/48848418/73607983-a66ec900-45ef-11ea-8e45-5e7d2800220e.JPG)
+
+![IMG_7617](https://user-images.githubusercontent.com/48848418/73607979-95be5300-45ef-11ea-8893-c2a4d72c3d3d.JPG)
+
+![IMG_7620](https://user-images.githubusercontent.com/48848418/73607981-9a830700-45ef-11ea-85c3-f1f489b9ff5f.JPG)
+
 
     Author: Phan Thanh Tung
