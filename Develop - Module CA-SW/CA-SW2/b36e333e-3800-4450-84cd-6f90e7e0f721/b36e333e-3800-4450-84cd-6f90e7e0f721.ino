@@ -4,7 +4,7 @@
 * @author   Thanh Tung Phan
 * @brief    Source code for first Chika Smart Switch - CA-SW2
 * @corp     Chika Corporation
-* @last-mod Monday, 13th Jan, 2020
+* @last-mod Saturday, 1st Feb, 2020
 */
 
 /*******************************************************************************
@@ -23,7 +23,7 @@ Ticker ticker;
 //Wifi information - Just use for test wifi of module when SmartConfig meet failure
 
 const char *ssid = "username wifi";
-const char *password = "***********";
+const char *password = "password wifi";
 
 //Information of CA-SW2-1 and CA-SW2-2:
 const char *CA_SW2_1 = "0c38a97d-1564-4707-935c-18b4e9bcb0db";
@@ -89,10 +89,6 @@ boolean longPressActive= false;
 unsigned int buttonTimer = 0;
 unsigned int longPressTime = 5000;
 
-//Variables - Func:
-unsigned long previousMillis = 0;
-long interval = 200;
-
 /*******************************************************************************
  * @func    Setup range
  *
@@ -128,7 +124,7 @@ void setup()
 	Serial.println("\n\n_ CA-SW2 say hello to your home _");
 	pinMode(button_1, INPUT);
 	pinMode(button_2, INPUT);
-  pinMode(button_smartConfig, INPUT);
+	pinMode(button_smartConfig, INPUT);
 	
 	WiFi.setAutoConnect(true);
 	WiFi.setAutoReconnect(true);
@@ -143,7 +139,7 @@ void setup()
 
 //  setup_Wifi();
   
-	delay(7000);
+	delay(10000);
 	if(!WiFi.isConnected())
 	{
     digitalWrite(stateLED_control_1, HIGH);
@@ -174,8 +170,6 @@ void setup()
 //------------- MAIN LOOP -------------
 void loop()
 { 
-  int a = digitalRead(button_smartConfig);
-  Serial.println(a);
 	pressModify();
 	
 	if (WiFi.status() == WL_CONNECTED)
