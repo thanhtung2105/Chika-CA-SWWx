@@ -1,0 +1,331 @@
+ (routes 
+  (resolution mm 100000)
+  (parser
+  )
+  (parser
+  )
+  (structure_out
+   (layer TOP (type signal)
+   )
+   (layer I1 (type signal)
+   )
+   (layer I2 (type signal)
+   )
+   (layer I3 (type signal)
+   )
+   (layer I4 (type signal)
+   )
+   (layer I5 (type signal)
+   )
+   (layer I6 (type signal)
+   )
+   (layer I7 (type signal)
+   )
+   (layer I8 (type signal)
+   )
+   (layer I9 (type signal)
+   )
+   (layer I10 (type signal)
+   )
+   (layer I11 (type signal)
+   )
+   (layer I12 (type signal)
+   )
+   (layer I13 (type signal)
+   )
+   (layer I14 (type signal)
+   )
+   (layer BOT (type signal)
+   )
+  )
+  (library_out
+  (padstack $VIA#0_SIGNAL
+   (shape (circ TOP 76200 0 0))
+   (shape (circ I1 76200 0 0))
+   (shape (circ I2 76200 0 0))
+   (shape (circ I3 76200 0 0))
+   (shape (circ I4 76200 0 0))
+   (shape (circ I5 76200 0 0))
+   (shape (circ I6 76200 0 0))
+   (shape (circ I7 76200 0 0))
+   (shape (circ I8 76200 0 0))
+   (shape (circ I9 76200 0 0))
+   (shape (circ I10 76200 0 0))
+   (shape (circ I11 76200 0 0))
+   (shape (circ I12 76200 0 0))
+   (shape (circ I13 76200 0 0))
+   (shape (circ I14 76200 0 0))
+   (shape (circ BOT 76200 0 0))
+  )
+  (padstack $VIA#0_POWER
+   (shape (circ TOP 76200 0 0))
+   (shape (circ I1 76200 0 0))
+   (shape (circ I2 76200 0 0))
+   (shape (circ I3 76200 0 0))
+   (shape (circ I4 76200 0 0))
+   (shape (circ I5 76200 0 0))
+   (shape (circ I6 76200 0 0))
+   (shape (circ I7 76200 0 0))
+   (shape (circ I8 76200 0 0))
+   (shape (circ I9 76200 0 0))
+   (shape (circ I10 76200 0 0))
+   (shape (circ I11 76200 0 0))
+   (shape (circ I12 76200 0 0))
+   (shape (circ I13 76200 0 0))
+   (shape (circ I14 76200 0 0))
+   (shape (circ BOT 76200 0 0))
+  )
+  )
+  (network_out
+   (Net #00002 
+   (rule
+   )
+   (wire (path TOP 25400  -9525000 10668000 -9525000 11049000 -12465000 11049000
+     -12465000 11452000)
+    (connect (terminal pin RC2-0) (terminal smd IC-WIFI-2))
+   )
+   )
+   (Net #00003 
+   (rule
+   )
+   (wire (path TOP 25400  -9906000 10922000 -9906000 10998200 -11119699 10998200
+     -11119699 10985500 -12665000 10985500 -12665000 11452000)
+    (connect (terminal via) (terminal smd IC-WIFI-3))
+   )
+   (wire (path BOT 25400  -8890000 12192000 -9398000 12192000 -9398000 10922000
+     -9906000 10922000)
+    (connect (terminal pin Q2-1) (terminal via))
+   )
+   (via $VIA#0_SIGNAL -9906000 10922000)
+   )
+   (Net #00004 
+   (rule
+   )
+   (wire (path TOP 25400  -10541000 11811000 -10541000 11684000 -12865000 11684000
+     -12865000 11452000)
+    (connect (terminal via) (terminal smd IC-WIFI-4))
+   )
+   (wire (path BOT 25400  -10033000 11811000 -10541000 11811000)
+    (connect (terminal pin Q1-1) (terminal via))
+   )
+   (via $VIA#0_SIGNAL -10541000 11811000)
+   )
+   (Net #00005 
+   (rule
+   )
+   (wire (path TOP 25400  -10541000 10922000 -13065000 10922000 -13065000 11452000)
+    (connect (terminal via) (terminal smd IC-WIFI-5))
+   )
+   (wire (path BOT 25400  -9525000 8509000 -9525000 8802741 -10541000 8802741
+     -10541000 10922000)
+    (connect (terminal pin RC6-0) (terminal via))
+   )
+   (via $VIA#0_SIGNAL -10541000 10922000)
+   )
+   (Net #00006 
+   (rule
+   )
+   (wire (path TOP 25400  -13144500 11049000 -13265000 11049000 -13265000 11452000)
+    (connect (terminal via) (terminal smd IC-WIFI-6))
+   )
+   (wire (path BOT 25400  -12827000 8509000 -12827000 11049000 -13144500 11049000)
+    (connect (terminal pin RB3-0) (terminal via))
+   )
+   (wire (path TOP 25400  -12827000 8509000 -12573000 8509000 -12573000 8636000
+     -11049000 8636000 -11049000 8509000 -10795000 8509000)
+    (connect (terminal pin RB3-0) (terminal pin RB2-0))
+   )
+   (via $VIA#0_SIGNAL -13144500 11049000)
+   )
+   (Net #00007 
+   (rule
+   )
+   (wire (path TOP 25400  -13462000 10795000 -10033000 10795000 -10033000 10668000
+     -9779000 10668000)
+    (connect (terminal wire) (terminal pin R1-1))
+   )
+   (wire (path BOT 25400  -10287000 11557000 -10287000 10795000 -9779000 10795000)
+    (connect (terminal pin Q1-2) (terminal wire))
+   )
+   (wire (path BOT 25400  -9779000 10795000 -9144000 10795000 -9144000 11176000)
+    (connect (terminal wire) (terminal wire))
+   )
+   (wire (path BOT 25400  -9779000 10160000 -9779000 9969500 -9525000 9969500
+     -9525000 9652000)
+    (connect (terminal pin R2-1) (terminal pin RC4-0))
+   )
+   (wire (path TOP 25400  -13465000 11452000 -13462000 11452000 -13462000 10795000)
+    (connect (terminal smd IC-WIFI-7) (terminal wire))
+   )
+   (wire (path TOP 25400  -14859000 10795000 -14859000 10541000 -13462000 10541000
+     -13462000 10795000)
+    (connect (terminal pin CC1-0) (terminal wire))
+   )
+   (wire (path TOP 25400  -9525000 9017000 -9525000 9144000 -10541000 9144000
+     -10541000 9017000 -10795000 9017000)
+    (connect (terminal pin RC5-0) (terminal pin RB1-0))
+   )
+   (wire (path BOT 25400  -9144000 11938000 -9144000 11176000)
+    (connect (terminal pin Q2-2) (terminal wire))
+   )
+   (wire (path BOT 25400  -9525000 9652000 -9525000 9017000)
+    (connect (terminal pin RC4-0) (terminal pin RC5-0))
+   )
+   (wire (path BOT 25400  -8509000 11176000 -9144000 11176000)
+    (connect (terminal pin RB6-1) (terminal wire))
+   )
+   (wire (path BOT 25400  -9779000 10668000 -9779000 10160000)
+    (connect (terminal pin R1-1) (terminal pin R2-1))
+   )
+   (wire (path BOT 25400  -8509000 10668000 -8509000 11176000)
+    (connect (terminal pin RC2-1) (terminal pin RB6-1))
+   )
+   (wire (path BOT 25400  -9779000 10668000 -9779000 10795000)
+    (connect (terminal pin R1-1) (terminal wire))
+   )
+   )
+   (Net #00011 
+   (rule
+   )
+   (wire (path TOP 25400  -14986000 9652000 -14986000 10451999 -13765000 10451999)
+    (connect (terminal pin RB5-0) (terminal smd IC-WIFI-11))
+   )
+   (wire (path BOT 25400  -14986000 9652000 -14986000 11684000 -14732000 11684000
+     -14732000 11938000)
+    (connect (terminal pin RB5-0) (terminal pin RB4-0))
+   )
+   )
+   (Net #00015 
+   (rule
+   )
+   (wire (path TOP 25400  -9525000 10160000 -9525000 9906000 -13265000 9906000
+     -13265000 9652000)
+    (connect (terminal pin RC3-0) (terminal smd IC-WIFI-15))
+   )
+   )
+   (Net #00016 
+   (rule
+   )
+   (wire (path TOP 25400  -8509000 9652000 -8509000 9461500 -10985500 9461500
+     -10985500 9842500 -13065000 9842500 -13065000 9652000)
+    (connect (terminal pin RC4-1) (terminal smd IC-WIFI-16))
+   )
+   )
+   (Net #00017 
+   (rule
+   )
+   (wire (path TOP 25400  -8509000 9017000 -8763000 9017000 -8763000 9334500
+     -12865000 9334500 -12865000 9652000)
+    (connect (terminal pin RC5-1) (terminal smd IC-WIFI-17))
+   )
+   )
+   (Net #00018 
+   (rule
+   )
+   )
+   (Net #00019 
+   (rule
+   )
+   )
+   (Net #00022 
+   (rule
+   )
+   )
+   (Net #00025 
+   (rule
+   )
+   )
+   (Net #00026 
+   (rule
+   )
+   )
+   (Net #00050 
+   (rule
+   )
+   (wire (path BOT 25400  -11811000 8509000 -11811000 8318500 -14351000 8318500
+     -14351000 9144000)
+    (connect (terminal pin RB3-1) (terminal pin NPN1-1))
+   )
+   )
+   (Net #00051 
+   (rule
+   )
+   (wire (path TOP 25400  -9779000 9017000 -10033000 9017000 -10033000 8699500
+     -14287500 8699500 -14287500 8890000 -14605000 8890000)
+    (connect (terminal pin RB1-1) (terminal pin NPN1-2))
+   )
+   )
+   (Net #00052 
+   (rule
+   )
+   (wire (path TOP 25400  -11176000 12319000 -13462000 12319000 -13462000 11938000
+     -13716000 11938000)
+    (connect (terminal pin NPN2-1) (terminal pin RB4-1))
+   )
+   )
+   (Net #00053 
+   (rule
+   )
+   (wire (path BOT 25400  -11430000 12065000 -11430000 12509500 -9525000 12509500
+     -9525000 11176000)
+    (connect (terminal pin NPN2-2) (terminal pin RB6-0))
+   )
+   )
+   (Net #00054 
+   (rule
+   )
+   )
+   (Net #00055 
+   (rule
+   )
+   )
+   (Net #00077 
+   (rule
+   )
+   (wire (path BOT 25400  -10795000 10668000 -12573000 10668000 -12573000 11938000)
+    (connect (terminal pin R1-0) (terminal pin "AC TO DC"-2))
+   )
+   )
+   (Net #00078 
+   (rule
+   )
+   (wire (path TOP 25400  -10795000 10160000 -10795000 10350500 -9334500 10350500
+     -9334500 9779000 -9779000 9779000 -9779000 9652000)
+    (connect (terminal pin R2-0) (terminal pin R3-1))
+   )
+   )
+   (Net GND 
+   (rule
+   )
+   (wire (path BOT 25400  -14097000 10795000 -14097000 11464991 -12827000 11464991
+     -12827000 11938000)
+    (connect (terminal wire) (terminal pin "AC TO DC"-1))
+   )
+   (wire (path BOT 25400  -14097000 10795000 -14097000 8890000)
+    (connect (terminal wire) (terminal pin NPN1-0))
+   )
+   (wire (path TOP 25400  -10795000 9652000 -10541000 9652000 -10541000 9525000
+     -8699500 9525000 -8699500 9906000 -8509000 9906000 -8509000 10160000)
+    (connect (terminal pin R3-0) (terminal pin RC3-1))
+   )
+   (wire (path BOT 25400  -14605000 10795000 -14097000 10795000)
+    (connect (terminal pin CC1-1) (terminal wire))
+   )
+   (wire (path TOP 25400  -14097000 8890000 -13465000 8890000 -13465000 9652000)
+    (connect (terminal pin NPN1-0) (terminal smd IC-WIFI-14))
+   )
+   (wire (path BOT 25400  -10795000 9652000 -10795000 9906000 -10668000 9906000
+     -10668000 11747500 -10922000 11747500 -10922000 12065000)
+    (connect (terminal pin R3-0) (terminal pin NPN2-0))
+   )
+   (wire (path TOP 25400  -10922000 12065000 -11239500 12065000 -11239500 11874500
+     -12241611 11874500 -12241611 12128500 -12827000 12128500 -12827000 11938000)
+    (connect (terminal pin NPN2-0) (terminal pin "AC TO DC"-1))
+   )
+   (wire (path BOT 25400  -8509000 10160000 -8509000 9906000 -8699500 9906000
+     -8699500 8763000 -8509000 8763000 -8509000 8509000)
+    (connect (terminal pin RC3-1) (terminal pin RC6-1))
+   )
+   )
+  )
+ )
