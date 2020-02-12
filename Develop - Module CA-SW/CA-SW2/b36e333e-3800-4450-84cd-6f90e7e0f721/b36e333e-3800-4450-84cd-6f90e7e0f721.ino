@@ -4,7 +4,7 @@
 * @author   Thanh Tung Phan
 * @brief    Source code for first Chika Smart Switch - CA-SW2
 * @corp     Chika Corporation
-* @last-mod Saturday, 1st Feb, 2020
+* @last-mod Wednesday, 12th Feb, 2020
 */
 
 /*******************************************************************************
@@ -21,7 +21,6 @@ Ticker ticker;
  *  VALUE DEFINITION
  ******************************************************************************/
 //Wifi information - Just use for test wifi of module when SmartConfig meet failure
-
 const char *ssid = "username wifi";
 const char *password = "password wifi";
 
@@ -83,11 +82,8 @@ int stateLED_control_2 = 2;		//@PIN_17
 boolean stateDEVICE_control_1 = false;
 boolean stateDEVICE_control_2 = false;
 boolean smartConfigStart =  false;
-boolean buttonActive = false;
-boolean longPressActive= false;
 
-unsigned int buttonTimer = 0;
-unsigned int longPressTime = 5000;
+unsigned int longPressTime = 6000;
 
 /*******************************************************************************
  * @func    Setup range
@@ -139,22 +135,14 @@ void setup()
 
 //  setup_Wifi();
   
-	delay(10000);
-	if(!WiFi.isConnected())
-	{
-    digitalWrite(stateLED_control_1, HIGH);
-    digitalWrite(stateLED_control_2, LOW);
-		startSmartConfig();
-	}
-	else
-	{
-		digitalWrite(stateLED_control_1, HIGH);
-		digitalWrite(stateLED_control_2, HIGH);
-		Serial.println("WIFI CONNECTED");
-		Serial.println(WiFi.SSID());
-		Serial.print("IP: ");
-		Serial.println(WiFi.localIP());
-	}
+	delay(8000);
+
+	digitalWrite(stateLED_control_1, HIGH);
+	digitalWrite(stateLED_control_2, HIGH);
+	Serial.println("WIFI CONNECTED");
+	Serial.println(WiFi.SSID());
+	Serial.print("IP: ");
+	Serial.println(WiFi.localIP());
  	
 	Serial.println("Trying connect MQTT ...");
 	client.setServer(mqtt_server, mqtt_port);
@@ -170,8 +158,6 @@ void setup()
 //------------- MAIN LOOP -------------
 void loop()
 { 
-	pressModify();
-	
 	if (WiFi.status() == WL_CONNECTED)
 	{
 	  if(!client.connected())	{
@@ -218,38 +204,6 @@ void loop()
 }
 
 //------------- OTHER FUNCTIONS -------------
-void pressModify()
-{
-	if (digitalRead(button_smartConfig) == HIGH) 
-	{
-		Serial.println("Starting smart config ...");
-		Serial.println(digitalRead(button_smartConfig));
-		if (buttonActive == false) 
-		{
-				buttonActive = true;
-				buttonTimer = millis();
-		}
-    if ((millis() - buttonTimer > longPressTime) && (longPressActive == false)) 
-		{
-			longPressActive = true;
-			digitalWrite(stateLED_control_1, HIGH);
-			digitalWrite(stateLED_control_2, LOW);
-			startSmartConfig();
-		}
-	} 
-	else 
-	{
-    if (buttonActive == true) 
-	{
-      if (longPressActive == true) 
-	  {
-        longPressActive = false;
-      } 
-      buttonActive = false;
-    }
-  }
-}
-
 
 //Callback:
 void callback(char *topic, byte *payload, unsigned int length)
@@ -312,6 +266,8 @@ void callback(char *topic, byte *payload, unsigned int length)
 ***********************************************************************************/
 void reconnect_mqtt()
 {
+	boolean check_Button_1;
+	boolean check_Button_2;
 	while (!client.connected())
 	{
 		Serial.print("Attempting MQTT connection...");
@@ -319,10 +275,33 @@ void reconnect_mqtt()
         clientId += String(random(0xffff), HEX);
         Serial.println(clientId);
 		
+		boolean check_Button_1 = isButton_Click(button_1);			
+		if (check_Button_1)
+		{
+			Serial.println("\nButton 1 - Clicked!");
+			digitalWrite(stateLED_control_1, stateDEVICE_control_1);
+			digitalWrite(control_1, !stateDEVICE_control_1);
+			
+			stateDEVICE_control_1 = !stateDEVICE_control_1;
+			Serial.print("Relay 1 change state to: ");
+			Serial.print(stateDEVICE_control_1);
+		}
+		
+		boolean check_Button_2 = isButton_Click(button_2);
+		if (check_Button_2)
+		{
+			Serial.println("\nButton 2 - Clicked!");
+			digitalWrite(stateLED_control_2, stateDEVICE_control_2);
+			digitalWrite(control_2, !stateDEVICE_control_2);
+			
+			stateDEVICE_control_2 = !stateDEVICE_control_2;
+			Serial.print("Relay 2 change state to: ");
+			Serial.print(stateDEVICE_control_2);
+		}
+
 		if (client.connect(clientId.c_str(), mqtt_user, mqtt_pass))
         {
             Serial.println("Connected");
-
             client.subscribe(CA_SW2_1);
             client.subscribe(CA_SW2_2);
         }
@@ -330,8 +309,8 @@ void reconnect_mqtt()
         {
             Serial.print("Failed, rc=");
             Serial.print(client.state());
-            Serial.println("Try again in 5 seconds");
-            delay(5000);
+            Serial.println("Try again in 3 seconds");
+            delay(3000);
         }
     }
 }
@@ -347,9 +326,17 @@ void reconnect_mqtt()
 int isButton_Click(int GPIO_to_read)
 {
     int out = 0;
+	unsigned int timer;
+    timer = millis();
     while (digitalRead(GPIO_to_read) == 0)
     {
-        delay(200);
+        delay(20);
+        if (millis() - timer > longPressTime)
+        {
+          Serial.println("Starting smart config ...");
+          startSmartConfig();
+        }
+        else
         out = 1;
     }
     return out;
