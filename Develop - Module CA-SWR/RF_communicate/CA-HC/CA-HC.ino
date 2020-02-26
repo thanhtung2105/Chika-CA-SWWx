@@ -9,21 +9,21 @@ making device for example today is Feb 17th and this is the first product in tha
 for this SWR is: const byte address[15] = "83878217022001"  ( 83 87 82 | 17 02 20 | 01 )          */
 
 RF24 radio(2, 15);    //nRF24L01 (CE,CSN) connections PIN
-const uint40_t address[15] = "83878217022001";
+const byte address[15] = "83878226022001";
 /*
 const byte address[15] = "**************";
 const byte address[15] = "**************";
 const byte address[15] = "**************";
 */
 
-boolean stateButton[2];
-boolean stateButton_MQTT[2];
+boolean stateButton[1];
+boolean stateButton_MQTT[1];
 
 const char *ssid = "HCMUS-VLTHE306";
 const char *password = "vlth@e306";
 
-const char *CA_SWR_1 = "swr/01";
-const char *CA_SWR_2 = "swr/02";
+//Topic: product_id/button_id
+const char *CA_SWR = "2a0a6b88-769e-4a63-ac5d-1392a7199e88/be47fa93-15df-44b6-bdba-c821a117cd41";
 
 //Config MQTT broker information:
 const char *mqtt_server = "chika.gq";
@@ -107,14 +107,14 @@ void loop()
       stateButton_MQTT[1] = stateButton[1];
 
        if(stateButton[0])
-            client.publish(CA_SWR_1,"1");
+            client.publish(CA_SWR,"1");
        else
-            client.publish(CA_SWR_1,"0");
+            client.publish(CA_SWR,"0");
        
-       if(stateButton[1])
-            client.publish(CA_SWR_2,"1");
-       else
-            client.publish(CA_SWR_2,"0");
+//       if(stateButton[1])
+//            client.publish(CA_SWR_2,"1");
+//       else
+//            client.publish(CA_SWR_2,"0");
     }
   delay(100);
 }
@@ -131,8 +131,8 @@ void reconnect_mqtt()
     if (client.connect(clientId.c_str(), mqtt_user, mqtt_pass))
         {
             Serial.println("Connected");
-            client.subscribe(CA_SWR_1);
-            client.subscribe(CA_SWR_2);
+            client.subscribe(CA_SWR);
+//            client.subscribe(CA_SWR_2);
         }
         else
         {
@@ -146,10 +146,10 @@ void reconnect_mqtt()
 
 void callback(char *topic, byte *payload, unsigned int length)
 {
-  //Topic list test is the value of variables: CA_SWR_1 and CA_SWR_2
+  //Topic list test is the value of variables: CA_SWR
   Serial.print("Topic [");
   Serial.print(topic);
-  Serial.print("]");
+  Serial.print("]: ");
   //Print message of button ID:
   for (int i = 0; i < length; i++)
   {
@@ -158,7 +158,7 @@ void callback(char *topic, byte *payload, unsigned int length)
   Serial.println();
 
   //Differenate the button ID: 1 - swr/01 & 2 - swr/02
-  if ((char)topic[5] == '1')
+  if ((char)topic[5] == 'f')
     switch ((char)payload[0])
     {
       case '1':
@@ -177,22 +177,22 @@ void callback(char *topic, byte *payload, unsigned int length)
       break;
     }
    
-  else if ((char)topic[5] == '2')
-    switch ((char)payload[0])
-    {
-      case '1':
-      radio.stopListening();
-      stateButton_MQTT[1] = 1;
-      
-      radio.openWritingPipe(address);
-      radio.write(&stateButton_MQTT, sizeof(stateButton_MQTT));
-      break;
-      case '0':
-      radio.stopListening();
-      stateButton_MQTT[1] = 0;
-      
-      radio.openWritingPipe(address);
-      radio.write(&stateButton_MQTT, sizeof(stateButton_MQTT));
-      break;
-    } 
+//  else if ((char)topic[5] == '2')
+//    switch ((char)payload[0])
+//    {
+//      case '1':
+//      radio.stopListening();
+//      stateButton_MQTT[1] = 1;
+//      
+//      radio.openWritingPipe(address);
+//      radio.write(&stateButton_MQTT, sizeof(stateButton_MQTT));
+//      break;
+//      case '0':
+//      radio.stopListening();
+//      stateButton_MQTT[1] = 0;
+//      
+//      radio.openWritingPipe(address);
+//      radio.write(&stateButton_MQTT, sizeof(stateButton_MQTT));
+//      break;
+//    } 
 }
