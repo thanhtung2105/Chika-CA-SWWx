@@ -10,6 +10,7 @@ for this SWR is: const byte address[15] = "83878217022001"  ( 83 87 82 | 17 02 2
 
 RF24 radio(2, 15);    //nRF24L01 (CE,CSN) connections PIN
 const byte address[15] = "83878226022001";
+
 /*
 const byte address[15] = "**************";
 const byte address[15] = "**************";
@@ -19,8 +20,8 @@ const byte address[15] = "**************";
 boolean stateButton[1];
 boolean stateButton_MQTT[1];
 
-const char *ssid = "HCMUS-VLTHE306";
-const char *password = "vlth@e306";
+const char *ssid = "Phong_510";
+const char *password = "phong510@hcmus";
 
 //Topic: product_id/button_id
 const char *CA_SWR = "2a0a6b88-769e-4a63-ac5d-1392a7199e88/be47fa93-15df-44b6-bdba-c821a117cd41";
@@ -157,21 +158,20 @@ void callback(char *topic, byte *payload, unsigned int length)
   }
   Serial.println();
 
-  //Differenate the button ID: 1 - swr/01 & 2 - swr/02
-  if ((char)topic[5] == 'f')
+  if ((char)topic[5] == 'b')
     switch ((char)payload[0])
     {
       case '1':
-      radio.stopListening();
       stateButton_MQTT[0] = 1;
       
+      radio.stopListening();
       radio.openWritingPipe(address);
       radio.write(&stateButton_MQTT, sizeof(stateButton_MQTT));
       break;
       case '0':
-      radio.stopListening();
       stateButton_MQTT[0] = 0;
       
+      radio.stopListening();
       radio.openWritingPipe(address);
       radio.write(&stateButton_MQTT, sizeof(stateButton_MQTT));
       break;
