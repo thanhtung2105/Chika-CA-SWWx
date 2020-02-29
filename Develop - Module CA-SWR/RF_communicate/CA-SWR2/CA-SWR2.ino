@@ -7,7 +7,7 @@ making device for example today is Feb 17th and this is the first product in tha
 for this SWR is: const byte address[15] = "83878217022001"	( 83 87 82 | 17 02 20 | 01 )					*/
 
 RF24 radio(9, 10);   //nRF24L01 (CE,CSN) connections PIN
-const byte address[15] = "83878217022001";    //Changeable
+const byte address[15] = "83878226022001";    //Changeable
 
 const int button_1 = 5;
 const int button_2 = 6;
