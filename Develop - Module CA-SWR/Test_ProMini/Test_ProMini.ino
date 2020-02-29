@@ -10,6 +10,9 @@
  *          RTS           DTR
  * 3. Kết nối lại USB UART và chọn Board ProMini trong list board cùng với loại thích hợp và COM kết nối.
  * 4. Bắt đầu nạp code trực tiếp cho ProMini như bình thường.
+ * 
+ * Hoặc nạp code bằng TTL USB Uart bằng cách: đấu chéo chân TX-RX RX-TX
+ * Khi nạp code nhấn giữ reset cho đến khi console arduino báo uploading... thì nhả nút reset ra.
  */                                                  
 
 int PIN_1 = 2;
