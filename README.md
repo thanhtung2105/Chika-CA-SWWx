@@ -1,4 +1,4 @@
-# Chika-CA-SWx
+# Chika-CA-SWWx
 
 My Graduate Thesis project work co-operate with Chika Corporation 智家 (チカ).
 
