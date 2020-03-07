@@ -24,9 +24,9 @@ Ticker ticker;
 const char *ssid = "username wifi";
 const char *password = "password wifi";
 
-//Information of CA-SW2-1 and CA-SW2-2:
-const char *CA_SW2_1 = "6883dd85-c759-428c-98fe-77b00c20c710";
-const char *CA_SW2_2 = "7f669cb3-2189-4c22-ae09-cb6cc663b96d";
+//Information of CA-SW2-1 and CA-SW2-2:		char[37]=6/7
+const char *CA_SW2_1 = "6e2b871e-fd51-4006-af7b-a3ab59b17c40/6883dd85-c759-428c-98fe-77b00c20c710";
+const char *CA_SW2_2 = "6e2b871e-fd51-4006-af7b-a3ab59b17c40/7f669cb3-2189-4c22-ae09-cb6cc663b96d";
 
 //Config MQTT broker information:
 const char *mqtt_server = "chika.gq";
@@ -67,16 +67,14 @@ const char *mqtt_pass = "2502";
  * 
 *************************************************************************************************/
 
-int button_1 = 4;				//@PIN_19
-int button_2 = 5;				//@PIN_20
+int button_1 = 13;				//@PIN_7
+int button_2 = 12;				//@PIN_6
 
-int button_smartConfig = 12;	//@PIN_6
+int control_1 = 5;				//@PIN_20
+int control_2 = 4;				//@PIN_19			
 
-int control_1 = 16;				//@PIN_4
-int control_2 = 14;				//@PIN_5			
-
-int stateLED_control_1 = 10;	//@PIN_12
-int stateLED_control_2 = 2;		//@PIN_17
+int stateLED_control_1 = 16;	//@PIN_4
+int stateLED_control_2 = 14;		//@PIN_5
 
 //Variables - MQTT:
 boolean stateDEVICE_control_1 = false;
@@ -94,19 +92,11 @@ unsigned int longPressTime = 6000;
 void setup_Wifi()
 {
 	delay(100);
-	Serial.println();
-	Serial.print("Connecting to ... ");
-	Serial.println(ssid);
 	WiFi.begin(ssid, password);
 	while (WiFi.status() != WL_CONNECTED)
 	{
 		delay(500);
-		Serial.print(".");
 	}
-	  Serial.println("");
-    Serial.println("WiFi connected!");
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
 }
 
 //Setup MQTT - Wifi ESP12F:
@@ -149,7 +139,7 @@ boolean startSmartConfig(){
     Serial.print(".");
     delay(500);
     if(t > 120){
-      Serial.println("Smart Config Fail");
+    //   Serial.println("Smart Config Fail");
 	  smartConfigStart = false;
 	  ticker.attach(0.5, blinking);
       delay(3000);
@@ -158,10 +148,10 @@ boolean startSmartConfig(){
     }
   }
   smartConfigStart = true;
-  Serial.println("WIFI CONNECTED");
-  Serial.print("IP: ");
-  Serial.println(WiFi.localIP());
-  Serial.println(WiFi.SSID());
+//   Serial.println("WIFI CONNECTED");
+//   Serial.print("IP: ");
+//   Serial.println(WiFi.localIP());
+//   Serial.println(WiFi.SSID());
   exitSmartConfig();
   return true;
 }
@@ -180,12 +170,12 @@ int isButton_Click(int GPIO_to_read)
     int out = 0;
 	unsigned int timer;
     timer = millis();
-    while (digitalRead(GPIO_to_read) == 0)
+    while (digitalRead(GPIO_to_read) == 1)
     {
         delay(20);
         if (millis() - timer > longPressTime)
         {
-          Serial.println("Starting smart config ...");
+        //  Serial.println("Starting smart config ...");
           startSmartConfig();
         }
         else
@@ -198,46 +188,42 @@ int isButton_Click(int GPIO_to_read)
 void callback(char *topic, byte *payload, unsigned int length)
 {
 	//Topic list test is the value of variables: CA_SW2_1 and CA_SW2_2
-	Serial.print("Topic [");
-	Serial.print(topic);
-	Serial.print("]");
+	// Serial.print("Topic [");
+	// Serial.print(topic);
+	// Serial.print("]");
 	//Print message of button ID:
-	for (unsigned int i = 0; i < length; i++)
-	{
-		Serial.print((char)payload[i]);
-	}
-	Serial.println();
+	// for (unsigned int i = 0; i < length; i++)
+	// {
+	// 	Serial.print((char)payload[i]);
+	// }
+	// Serial.println();
 
   //Differenate the button ID: 1 - 6883dd85-c759-428c-98fe-77b00c20c710 & 2 - 7f669cb3-2189-4c22-ae09-cb6cc663b96d
-	if ((char)topic[0] == '6')
+	if ((char)topic[37] == '6')
 		switch ((char)payload[0])
 		{
 			case '1':
 			digitalWrite(control_1, HIGH);
-			Serial.println("Change online CA-SW2-1 to ON");
 			stateDEVICE_control_1 = true;
 			digitalWrite(stateLED_control_1,stateDEVICE_control_1);
 			break;
 			case '0':
 			digitalWrite(control_1, LOW);
-			Serial.println("Change online CA-SW2-1 to OFF");
 			stateDEVICE_control_1 = false;
 			digitalWrite(stateLED_control_1,stateDEVICE_control_1);
 			break;
 		}
    
-	else if ((char)topic[0] == '7')
+	else if ((char)topic[37] == '7')
 		switch ((char)payload[0])
 		{
 			case '1':
 			digitalWrite(control_2, HIGH);
-			Serial.println("Change online CA-SW2-2 to ON");
 			stateDEVICE_control_2 = true;
 			digitalWrite(stateLED_control_2,stateDEVICE_control_2);
 			break;
 			case '0':
 			digitalWrite(control_2, LOW);
-			Serial.println("Change online CA-SW2-2 to OFF");
 			stateDEVICE_control_2 = false;
 			digitalWrite(stateLED_control_2,stateDEVICE_control_2);
 			break;
@@ -266,39 +252,39 @@ void reconnect_mqtt()
 		check_Button_1 = isButton_Click(button_1);			
 		if (check_Button_1)
 		{
-			Serial.println("\nButton 1 - Clicked!");
+			// Serial.println("\nButton 1 - Clicked!");
 			digitalWrite(stateLED_control_1, stateDEVICE_control_1);
 			digitalWrite(control_1, !stateDEVICE_control_1);
 			
 			stateDEVICE_control_1 = !stateDEVICE_control_1;
-			Serial.print("Relay 1 change state to: ");
-			Serial.print(stateDEVICE_control_1);
+			// Serial.print("Relay 1 change state to: ");
+			// Serial.print(stateDEVICE_control_1);
 		}
 		
 		check_Button_2 = isButton_Click(button_2);
 		if (check_Button_2)
 		{
-			Serial.println("\nButton 2 - Clicked!");
+			// Serial.println("\nButton 2 - Clicked!");
 			digitalWrite(stateLED_control_2, stateDEVICE_control_2);
 			digitalWrite(control_2, !stateDEVICE_control_2);
 			
 			stateDEVICE_control_2 = !stateDEVICE_control_2;
-			Serial.print("Relay 2 change state to: ");
-			Serial.print(stateDEVICE_control_2);
+			// Serial.print("Relay 2 change state to: ");
+			//Serial.print(stateDEVICE_control_2);
 		}
 
 		if (client.connect(clientId.c_str(), mqtt_user, mqtt_pass))
         {
-            Serial.println("Connected");
+            // Serial.println("Connected");
             client.subscribe(CA_SW2_1);
             client.subscribe(CA_SW2_2);
         }
         else
         {
-            Serial.print("Failed, rc=");
-            Serial.print(client.state());
-            Serial.println("Try again in 3 seconds");
-            delay(3000);
+            // Serial.print("Failed, rc=");
+            // Serial.print(client.state());
+            // Serial.println("Try again in 3 seconds");
+            delay(1000);
         }
     }
 }
@@ -308,10 +294,9 @@ void reconnect_mqtt()
 void setup()
 {
 	Serial.begin(115200);
-	Serial.println("\n\n_ CA-SW2 say hello to your home _");
+	// Serial.println("\n\n_ CA-SW2 say hello to your home _");
 	pinMode(button_1, INPUT);
 	pinMode(button_2, INPUT);
-	pinMode(button_smartConfig, INPUT);
 	
 	WiFi.setAutoConnect(true);
 	WiFi.setAutoReconnect(true);
@@ -330,12 +315,12 @@ void setup()
 
 	digitalWrite(stateLED_control_1, HIGH);
 	digitalWrite(stateLED_control_2, HIGH);
-	Serial.println("WIFI CONNECTED");
-	Serial.println(WiFi.SSID());
-	Serial.print("IP: ");
-	Serial.println(WiFi.localIP());
+	// Serial.println("WIFI CONNECTED");
+	// Serial.println(WiFi.SSID());
+	// Serial.print("IP: ");
+	// Serial.println(WiFi.localIP());
  	
-	Serial.println("Trying connect MQTT ...");
+	// Serial.println("Trying connect MQTT ...");
 	client.setServer(mqtt_server, mqtt_port);
 	client.setCallback(callback);
 }
@@ -363,7 +348,6 @@ void loop()
 			
 		if (check_Button_1)
 		{
-			Serial.println("\nButton 1 - Clicked!");
 			digitalWrite(stateLED_control_1, stateDEVICE_control_1);
 			digitalWrite(control_1, !stateDEVICE_control_1);
 			if (stateDEVICE_control_1)
@@ -372,13 +356,10 @@ void loop()
 				client.publish(CA_SW2_1, "1");
 			
 			stateDEVICE_control_1 = !stateDEVICE_control_1;
-			Serial.print("Relay 1 change state to: ");
-			Serial.print(stateDEVICE_control_1);
 		}
 		
 		if (check_Button_2)
 		{
-			Serial.println("\nButton 2 - Clicked!");
 			digitalWrite(stateLED_control_2, stateDEVICE_control_2);
 			digitalWrite(control_2, !stateDEVICE_control_2);
 			if (stateDEVICE_control_2)
@@ -387,8 +368,6 @@ void loop()
 				client.publish(CA_SW2_2, "1");
 			
 			stateDEVICE_control_2 = !stateDEVICE_control_2;
-			Serial.print("Relay 2 change state to: ");
-			Serial.print(stateDEVICE_control_2);
 		}
 
 	delay(100);
