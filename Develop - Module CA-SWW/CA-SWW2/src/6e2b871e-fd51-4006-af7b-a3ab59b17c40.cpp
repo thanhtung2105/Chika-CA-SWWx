@@ -6,9 +6,9 @@
 * @file     6e2b871e-fd51-4006-af7b-a3ab59b17c40.ino
 * @proc_id  6e2b871e-fd51-4006-af7b-a3ab59b17c40
 * @author   Thanh Tung Phan
-* @brief    Source code for the second Chika Smart Switch - CA-SW2
+* @brief    Source code for the second Chika Smart Switch - CA-SWW2
 * @corp     Chika Corporation
-* @last-mod Wednesday, 12th Feb, 2020
+* @last-mod Wednesday, 8th Mar, 2020
 */
 
 /*******************************************************************************
@@ -170,9 +170,9 @@ int isButton_Click(int GPIO_to_read)
     int out = 0;
 	unsigned int timer;
     timer = millis();
-    while (digitalRead(GPIO_to_read) == 1)
+    while (digitalRead(GPIO_to_read) == HIGH)
     {
-        delay(20);
+        delay(10);
         if (millis() - timer > longPressTime)
         {
         //  Serial.println("Starting smart config ...");
@@ -240,8 +240,8 @@ void callback(char *topic, byte *payload, unsigned int length)
 ***********************************************************************************/
 void reconnect_mqtt()
 {
-	boolean check_Button_1;
-	boolean check_Button_2;
+	// boolean check_Button_1;
+	// boolean check_Button_2;
 	while (!client.connected())
 	{
 		Serial.print("Attempting MQTT connection...");
@@ -249,29 +249,29 @@ void reconnect_mqtt()
         clientId += String(random(0xffff), HEX);
         Serial.println(clientId);
 		
-		check_Button_1 = isButton_Click(button_1);			
-		if (check_Button_1)
-		{
-			// Serial.println("\nButton 1 - Clicked!");
-			digitalWrite(stateLED_control_1, stateDEVICE_control_1);
-			digitalWrite(control_1, !stateDEVICE_control_1);
+		// check_Button_1 = isButton_Click(button_1);			
+		// if (check_Button_1)
+		// {
+		// 	// Serial.println("\nButton 1 - Clicked!");
+		// 	digitalWrite(stateLED_control_1, stateDEVICE_control_1);
+		// 	digitalWrite(control_1, !stateDEVICE_control_1);
 			
-			stateDEVICE_control_1 = !stateDEVICE_control_1;
-			// Serial.print("Relay 1 change state to: ");
-			// Serial.print(stateDEVICE_control_1);
-		}
+		// 	stateDEVICE_control_1 = !stateDEVICE_control_1;
+		// 	// Serial.print("Relay 1 change state to: ");
+		// 	// Serial.print(stateDEVICE_control_1);
+		// }
 		
-		check_Button_2 = isButton_Click(button_2);
-		if (check_Button_2)
-		{
-			// Serial.println("\nButton 2 - Clicked!");
-			digitalWrite(stateLED_control_2, stateDEVICE_control_2);
-			digitalWrite(control_2, !stateDEVICE_control_2);
+		// check_Button_2 = isButton_Click(button_2);
+		// if (check_Button_2)
+		// {
+		// 	// Serial.println("\nButton 2 - Clicked!");
+		// 	digitalWrite(stateLED_control_2, stateDEVICE_control_2);
+		// 	digitalWrite(control_2, !stateDEVICE_control_2);
 			
-			stateDEVICE_control_2 = !stateDEVICE_control_2;
-			// Serial.print("Relay 2 change state to: ");
-			//Serial.print(stateDEVICE_control_2);
-		}
+		// 	stateDEVICE_control_2 = !stateDEVICE_control_2;
+		// 	// Serial.print("Relay 2 change state to: ");
+		// 	//Serial.print(stateDEVICE_control_2);
+		// }
 
 		if (client.connect(clientId.c_str(), mqtt_user, mqtt_pass))
         {
@@ -294,7 +294,7 @@ void reconnect_mqtt()
 void setup()
 {
 	Serial.begin(115200);
-	// Serial.println("\n\n_ CA-SW2 say hello to your home _");
+	Serial.println("\n\n_ CA-SW2 say hello to your home _");
 	pinMode(button_1, INPUT);
 	pinMode(button_2, INPUT);
 	
@@ -310,8 +310,6 @@ void setup()
 	pinMode(stateDEVICE_control_2, OUTPUT);
 
 //  setup_Wifi();
-  
-	delay(8000);
 
 	digitalWrite(stateLED_control_1, HIGH);
 	digitalWrite(stateLED_control_2, HIGH);
@@ -323,6 +321,7 @@ void setup()
 	// Serial.println("Trying connect MQTT ...");
 	client.setServer(mqtt_server, mqtt_port);
 	client.setCallback(callback);
+
 }
 
 
@@ -351,9 +350,9 @@ void loop()
 			digitalWrite(stateLED_control_1, stateDEVICE_control_1);
 			digitalWrite(control_1, !stateDEVICE_control_1);
 			if (stateDEVICE_control_1)
-				client.publish(CA_SW2_1, "0");
+				client.publish(CA_SW2_1, "0", true);
 			else
-				client.publish(CA_SW2_1, "1");
+				client.publish(CA_SW2_1, "1", true);
 			
 			stateDEVICE_control_1 = !stateDEVICE_control_1;
 		}
@@ -363,12 +362,10 @@ void loop()
 			digitalWrite(stateLED_control_2, stateDEVICE_control_2);
 			digitalWrite(control_2, !stateDEVICE_control_2);
 			if (stateDEVICE_control_2)
-				client.publish(CA_SW2_2, "0");
+				client.publish(CA_SW2_2, "0", true);
 			else
-				client.publish(CA_SW2_2, "1");
+				client.publish(CA_SW2_2, "1", true);
 			
 			stateDEVICE_control_2 = !stateDEVICE_control_2;
 		}
-
-	delay(100);
 }
