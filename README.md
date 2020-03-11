@@ -28,12 +28,10 @@ My Graduate Thesis project work co-operate with Chika Corporation 智家 (チカ
 
 ![86715783_187449332510564_7884290745375391744_n](https://user-images.githubusercontent.com/48848418/75621527-1dd05200-5bc8-11ea-9830-11fb1bc4a2ba.png)
 
+![89547606_1107444239605126_4079126574987739136_n](https://user-images.githubusercontent.com/48848418/76400327-b4fc8d00-63b2-11ea-8d2f-94cbffae5dc6.jpg)
 
-![IMG_7618](https://user-images.githubusercontent.com/48848418/73607983-a66ec900-45ef-11ea-8e45-5e7d2800220e.JPG)
+![88984095_2592028717736543_9122740841440346112_n](https://user-images.githubusercontent.com/48848418/76400335-b75ee700-63b2-11ea-92ce-a66cdade64c9.jpg)
 
-![IMG_7619](https://user-images.githubusercontent.com/48848418/73607999-ed5cbe80-45ef-11ea-9c76-d7b155ba4b18.JPG)
-
-![IMG_7620](https://user-images.githubusercontent.com/48848418/73607981-9a830700-45ef-11ea-85c3-f1f489b9ff5f.JPG)
-
+![89352153_235181460849834_5174523718583451648_n](https://user-images.githubusercontent.com/48848418/76400337-b928aa80-63b2-11ea-8801-ad7997fd4116.jpg)
 
     Author: Phan Thanh Tung
