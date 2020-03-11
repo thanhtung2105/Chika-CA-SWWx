@@ -123,8 +123,8 @@ void blinking()
 void exitSmartConfig(){
 	WiFi.stopSmartConfig();
 	ticker.detach();
-	digitalWrite(stateLED_control_1, LOW);
-	digitalWrite(stateLED_control_2, LOW);
+	digitalWrite(stateLED_control_1, HIGH);
+	digitalWrite(stateLED_control_2, HIGH);
 }
 
 //SmartConfig:
@@ -205,12 +205,12 @@ void callback(char *topic, byte *payload, unsigned int length)
 			case '1':
 			digitalWrite(control_1, HIGH);
 			stateDEVICE_control_1 = true;
-			digitalWrite(stateLED_control_1,stateDEVICE_control_1);
+			digitalWrite(stateLED_control_1,!stateDEVICE_control_1);
 			break;
 			case '0':
 			digitalWrite(control_1, LOW);
 			stateDEVICE_control_1 = false;
-			digitalWrite(stateLED_control_1,stateDEVICE_control_1);
+			digitalWrite(stateLED_control_1,!stateDEVICE_control_1);
 			break;
 		}
    
@@ -220,12 +220,12 @@ void callback(char *topic, byte *payload, unsigned int length)
 			case '1':
 			digitalWrite(control_2, HIGH);
 			stateDEVICE_control_2 = true;
-			digitalWrite(stateLED_control_2,stateDEVICE_control_2);
+			digitalWrite(stateLED_control_2,!stateDEVICE_control_2);
 			break;
 			case '0':
 			digitalWrite(control_2, LOW);
 			stateDEVICE_control_2 = false;
-			digitalWrite(stateLED_control_2,stateDEVICE_control_2);
+			digitalWrite(stateLED_control_2,!stateDEVICE_control_2);
 			break;
 		}
    
@@ -311,8 +311,8 @@ void setup()
 
 //  setup_Wifi();
 
-	digitalWrite(stateLED_control_1, HIGH);
-	digitalWrite(stateLED_control_2, HIGH);
+	digitalWrite(stateLED_control_1, LOW);
+	digitalWrite(stateLED_control_2, LOW);
 	// Serial.println("WIFI CONNECTED");
 	// Serial.println(WiFi.SSID());
 	// Serial.print("IP: ");
@@ -347,7 +347,7 @@ void loop()
 			
 		if (check_Button_1)
 		{
-			digitalWrite(stateLED_control_1, stateDEVICE_control_1);
+			digitalWrite(stateLED_control_1, !stateDEVICE_control_1);
 			digitalWrite(control_1, !stateDEVICE_control_1);
 			if (stateDEVICE_control_1)
 				client.publish(CA_SW2_1, "0", true);
@@ -359,7 +359,7 @@ void loop()
 		
 		if (check_Button_2)
 		{
-			digitalWrite(stateLED_control_2, stateDEVICE_control_2);
+			digitalWrite(stateLED_control_2, !stateDEVICE_control_2);
 			digitalWrite(control_2, !stateDEVICE_control_2);
 			if (stateDEVICE_control_2)
 				client.publish(CA_SW2_2, "0", true);
