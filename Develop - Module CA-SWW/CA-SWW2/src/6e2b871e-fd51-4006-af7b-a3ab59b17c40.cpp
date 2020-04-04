@@ -2,19 +2,21 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <Ticker.h>
+#include <ArduinoJson.h>
+
 /*
 * @file     6e2b871e-fd51-4006-af7b-a3ab59b17c40.ino
 * @proc_id  6e2b871e-fd51-4006-af7b-a3ab59b17c40
 * @author   Thanh Tung Phan
 * @brief    Source code for the second Chika Smart Switch - CA-SWW2
 * @corp     Chika Corporation
-* @last-mod Wednesday, 8th Mar, 2020
+* @last-mod Saturday, 4th April, 2020
 */
 
 /*******************************************************************************
  *  INCLUDES
  ******************************************************************************/
- 
+
 Ticker ticker;
 
 /*******************************************************************************
@@ -24,9 +26,8 @@ Ticker ticker;
 const char *ssid = "username wifi";
 const char *password = "password wifi";
 
-//Information of CA-SW2-1 and CA-SW2-2:		char[37]=6/7
-const char *CA_SW2_1 = "6e2b871e-fd51-4006-af7b-a3ab59b17c40/6883dd85-c759-428c-98fe-77b00c20c710";
-const char *CA_SW2_2 = "6e2b871e-fd51-4006-af7b-a3ab59b17c40/7f669cb3-2189-4c22-ae09-cb6cc663b96d";
+//Information of the communication topic
+const char *CA_SW2 = "6e2b871e-fd51-4006-af7b-a3ab59b17c40";
 
 //Config MQTT broker information:
 const char *mqtt_server = "chika.gq";
@@ -67,19 +68,19 @@ const char *mqtt_pass = "2502";
  * 
 *************************************************************************************************/
 
-int button_1 = 13;				//@PIN_7
-int button_2 = 12;				//@PIN_6
+int button_1 = 13; //@PIN_7
+int button_2 = 12; //@PIN_6
 
-int control_1 = 5;				//@PIN_20
-int control_2 = 4;				//@PIN_19			
+int control_1 = 5; //@PIN_20
+int control_2 = 4; //@PIN_19
 
-int stateLED_control_1 = 16;	//@PIN_4
-int stateLED_control_2 = 14;		//@PIN_5
+int stateLED_control_1 = 16; //@PIN_4
+int stateLED_control_2 = 14; //@PIN_5
 
 //Variables - MQTT:
 boolean stateDEVICE_control_1 = false;
 boolean stateDEVICE_control_2 = false;
-boolean smartConfigStart =  false;
+boolean smartConfigStart = false;
 
 unsigned int longPressTime = 6000;
 
@@ -107,10 +108,10 @@ PubSubClient client(esp_12F);
 
 void blinking()
 {
-  bool state_1 = digitalRead(stateLED_control_1);
-  bool state_2 = digitalRead(stateLED_control_2);
-  digitalWrite(stateLED_control_1,!state_1);
-  digitalWrite(stateLED_control_2,!state_2);
+	bool state_1 = digitalRead(stateLED_control_1);
+	bool state_2 = digitalRead(stateLED_control_2);
+	digitalWrite(stateLED_control_1, !state_1);
+	digitalWrite(stateLED_control_2, !state_2);
 }
 
 /**********************************************************************************
@@ -120,7 +121,8 @@ void blinking()
  * @param: fd - file descriptor when using function
  * 
 ***********************************************************************************/
-void exitSmartConfig(){
+void exitSmartConfig()
+{
 	WiFi.stopSmartConfig();
 	ticker.detach();
 	digitalWrite(stateLED_control_1, LOW);
@@ -128,35 +130,36 @@ void exitSmartConfig(){
 }
 
 //SmartConfig:
-boolean startSmartConfig(){
-  int t = 0;
-  Serial.println("Smart Config Start");
-  WiFi.beginSmartConfig();
-  delay(500);
-  ticker.attach(0.1, blinking);
-  while(WiFi.status() != WL_CONNECTED){
-    t++;
-    Serial.print(".");
-    delay(500);
-    if(t > 120){
-    //   Serial.println("Smart Config Fail");
-	  smartConfigStart = false;
-	  ticker.attach(0.5, blinking);
-      delay(3000);
-      exitSmartConfig();
-      return false;
-    }
-  }
-  smartConfigStart = true;
-//   Serial.println("WIFI CONNECTED");
-//   Serial.print("IP: ");
-//   Serial.println(WiFi.localIP());
-//   Serial.println(WiFi.SSID());
-  exitSmartConfig();
-  return true;
+boolean startSmartConfig()
+{
+	int t = 0;
+	Serial.println("Smart Config Start");
+	WiFi.beginSmartConfig();
+	delay(500);
+	ticker.attach(0.1, blinking);
+	while (WiFi.status() != WL_CONNECTED)
+	{
+		t++;
+		Serial.print(".");
+		delay(500);
+		if (t > 120)
+		{
+			//   Serial.println("Smart Config Fail");
+			smartConfigStart = false;
+			ticker.attach(0.5, blinking);
+			delay(3000);
+			exitSmartConfig();
+			return false;
+		}
+	}
+	smartConfigStart = true;
+	//   Serial.println("WIFI CONNECTED");
+	//   Serial.print("IP: ");
+	//   Serial.println(WiFi.localIP());
+	//   Serial.println(WiFi.SSID());
+	exitSmartConfig();
+	return true;
 }
-
-
 
 /**********************************************************************************
  * @func  isButton_Click(int GPIO_to_read)
@@ -167,68 +170,40 @@ boolean startSmartConfig(){
 ***********************************************************************************/
 int isButton_Click(int GPIO_to_read)
 {
-    int out = 0;
+	int out = 0;
 	unsigned int timer;
-    timer = millis();
-    while (digitalRead(GPIO_to_read) == HIGH)
-    {
-        delay(10);
-        if (millis() - timer > longPressTime)
-        {
-        //  Serial.println("Starting smart config ...");
-          startSmartConfig();
-        }
-        else
-        out = 1;
-    }
-    return out;
+	timer = millis();
+	while (digitalRead(GPIO_to_read) == HIGH)
+	{
+		delay(10);
+		if (millis() - timer > longPressTime)
+		{
+			//  Serial.println("Starting smart config ...");
+			startSmartConfig();
+		}
+		else
+			out = 1;
+	}
+	return out;
 }
 
 //Callback:
 void callback(char *topic, byte *payload, unsigned int length)
 {
-	//Topic list test is the value of variables: CA_SW2_1 and CA_SW2_2
-	// Serial.print("Topic [");
-	// Serial.print(topic);
-	// Serial.print("]");
-	//Print message of button ID:
 	// for (unsigned int i = 0; i < length; i++)
 	// {
 	// 	Serial.print((char)payload[i]);
 	// }
-	// Serial.println();
-	
-  //Differenate the button ID: 1 - 6883dd85-c759-428c-98fe-77b00c20c710 & 2 - 7f669cb3-2189-4c22-ae09-cb6cc663b96d
-	if (topic == CA_SW2_1)
-		switch ((char)payload[0])
-		{
-			case '1':
-			digitalWrite(control_1, HIGH);
-			stateDEVICE_control_1 = true;
-			digitalWrite(stateLED_control_1, stateDEVICE_control_1);
-			break;
-			case '0':
-			digitalWrite(control_1, LOW);
-			stateDEVICE_control_1 = false;
-			digitalWrite(stateLED_control_1, stateDEVICE_control_1);
-			break;
-		}
-   
-	else if (topic == CA_SW2_2)
-		switch ((char)payload[0])
-		{
-			case '1':
-			digitalWrite(control_2, HIGH);
-			stateDEVICE_control_2 = true;
-			digitalWrite(stateLED_control_2, stateDEVICE_control_2);
-			break;
-			case '0':
-			digitalWrite(control_2, LOW);
-			stateDEVICE_control_2 = false;
-			digitalWrite(stateLED_control_2, stateDEVICE_control_2);
-			break;
-		}
-   
+	StaticJsonDocument<200> JsonDoc_MQTT;
+	deserializeJson(JsonDoc_MQTT, payload);
+
+	stateDEVICE_control_1 = JsonDoc_MQTT["button_1"];
+	stateDEVICE_control_2 = JsonDoc_MQTT["button_2"];
+
+	digitalWrite(control_1, stateDEVICE_control_1);
+	digitalWrite(stateLED_control_1, !stateDEVICE_control_1);
+	digitalWrite(control_2, stateDEVICE_control_2);
+	digitalWrite(stateLED_control_2, !stateDEVICE_control_2);
 }
 
 /**********************************************************************************
@@ -240,55 +215,53 @@ void callback(char *topic, byte *payload, unsigned int length)
 ***********************************************************************************/
 void reconnect_mqtt()
 {
-	// boolean check_Button_1;
-	// boolean check_Button_2;
+	boolean check_Button_1;
+	boolean check_Button_2;
 	while (!client.connected())
 	{
 		Serial.print("Attempting MQTT connection...");
-        String clientId = "CA-SW2 - ";
-        clientId += String(random(0xffff), HEX);
-        Serial.println(clientId);
-		
-		// check_Button_1 = isButton_Click(button_1);			
-		// if (check_Button_1)
-		// {
-		// 	// Serial.println("\nButton 1 - Clicked!");
-		// 	digitalWrite(stateLED_control_1, stateDEVICE_control_1);
-		// 	digitalWrite(control_1, !stateDEVICE_control_1);
-			
-		// 	stateDEVICE_control_1 = !stateDEVICE_control_1;
-		// 	// Serial.print("Relay 1 change state to: ");
-		// 	// Serial.print(stateDEVICE_control_1);
-		// }
-		
-		// check_Button_2 = isButton_Click(button_2);
-		// if (check_Button_2)
-		// {
-		// 	// Serial.println("\nButton 2 - Clicked!");
-		// 	digitalWrite(stateLED_control_2, stateDEVICE_control_2);
-		// 	digitalWrite(control_2, !stateDEVICE_control_2);
-			
-		// 	stateDEVICE_control_2 = !stateDEVICE_control_2;
-		// 	// Serial.print("Relay 2 change state to: ");
-		// 	//Serial.print(stateDEVICE_control_2);
-		// }
+		String clientId = "CA-SW2 - ";
+		clientId += String(random(0xffff), HEX);
+		Serial.println(clientId);
+
+		check_Button_1 = isButton_Click(button_1);
+		if (check_Button_1)
+		{
+			// Serial.println("\nButton 1 - Clicked!");
+			digitalWrite(stateLED_control_1, stateDEVICE_control_1);
+			digitalWrite(control_1, !stateDEVICE_control_1);
+
+			stateDEVICE_control_1 = !stateDEVICE_control_1;
+			// Serial.print("Relay 1 change state to: ");
+			// Serial.print(stateDEVICE_control_1);
+		}
+
+		check_Button_2 = isButton_Click(button_2);
+		if (check_Button_2)
+		{
+			// Serial.println("\nButton 2 - Clicked!");
+			digitalWrite(stateLED_control_2, stateDEVICE_control_2);
+			digitalWrite(control_2, !stateDEVICE_control_2);
+
+			stateDEVICE_control_2 = !stateDEVICE_control_2;
+			// Serial.print("Relay 2 change state to: ");
+			//Serial.print(stateDEVICE_control_2);
+		}
 
 		if (client.connect(clientId.c_str(), mqtt_user, mqtt_pass))
-        {
-            // Serial.println("Connected");
-            client.subscribe(CA_SW2_1);
-            client.subscribe(CA_SW2_2);
-        }
-        else
-        {
-            // Serial.print("Failed, rc=");
-            // Serial.print(client.state());
-            // Serial.println("Try again in 3 seconds");
-            delay(1000);
-        }
-    }
+		{
+			// Serial.println("Connected");
+			client.subscribe(CA_SW2);
+		}
+		else
+		{
+			// Serial.print("Failed, rc=");
+			// Serial.print(client.state());
+			// Serial.println("Try again in 3 seconds");
+			delay(500);
+		}
+	}
 }
-
 
 //General setup:
 void setup()
@@ -297,11 +270,11 @@ void setup()
 	Serial.println("\n\n_ CA-SW2 say hello to your home _");
 	pinMode(button_1, INPUT);
 	pinMode(button_2, INPUT);
-	
+
 	WiFi.setAutoConnect(true);
 	WiFi.setAutoReconnect(true);
 	WiFi.mode(WIFI_STA);
-	
+
 	pinMode(control_1, OUTPUT);
 	pinMode(control_2, OUTPUT);
 	pinMode(stateLED_control_1, OUTPUT);
@@ -309,7 +282,7 @@ void setup()
 	pinMode(stateDEVICE_control_1, OUTPUT);
 	pinMode(stateDEVICE_control_2, OUTPUT);
 
-//  setup_Wifi();
+	//  setup_Wifi();
 
 	digitalWrite(stateLED_control_1, HIGH);
 	digitalWrite(stateLED_control_2, HIGH);
@@ -317,13 +290,11 @@ void setup()
 	// Serial.println(WiFi.SSID());
 	// Serial.print("IP: ");
 	// Serial.println(WiFi.localIP());
- 	
+
 	// Serial.println("Trying connect MQTT ...");
 	client.setServer(mqtt_server, mqtt_port);
 	client.setCallback(callback);
-
 }
-
 
 /*************************************     Main Loop    ******************************************
  * @desc: process the physical touch and send request to Broker.
@@ -332,40 +303,46 @@ void setup()
 *************************************************************************************************/
 //------------- MAIN LOOP -------------
 void loop()
-{ 
+{
 	if (WiFi.status() == WL_CONNECTED)
 	{
-	  if(!client.connected())	{
-		reconnect_mqtt();
-	}
-	else
-	client.loop();
+		if (!client.connected())
+		{
+			reconnect_mqtt();
+		}
+		else
+			client.loop();
 	}
 
+	StaticJsonDocument<200> JsonDoc_SendToMQTT;
+	String SendToMQTT;
+	char payload_SendToMQTT[200];
+
+	JsonDoc_SendToMQTT["product_id"] = CA_SW2;
 	boolean check_Button_1 = isButton_Click(button_1);
 	boolean check_Button_2 = isButton_Click(button_2);
-			
-		if (check_Button_1)
-		{
-			digitalWrite(stateLED_control_1, stateDEVICE_control_1);
-			digitalWrite(control_1, !stateDEVICE_control_1);
-			if (stateDEVICE_control_1)
-				client.publish(CA_SW2_1, "0", true);
-			else
-				client.publish(CA_SW2_1, "1", true);
-			
-			stateDEVICE_control_1 = !stateDEVICE_control_1;
-		}
-		
-		if (check_Button_2)
-		{
-			digitalWrite(stateLED_control_2, stateDEVICE_control_2);
-			digitalWrite(control_2, !stateDEVICE_control_2);
-			if (stateDEVICE_control_2)
-				client.publish(CA_SW2_2, "0", true);
-			else
-				client.publish(CA_SW2_2, "1", true);
-			
-			stateDEVICE_control_2 = !stateDEVICE_control_2;
-		}
+
+	if (check_Button_1)
+	{
+		digitalWrite(stateLED_control_1, stateDEVICE_control_1);
+		digitalWrite(control_1, !stateDEVICE_control_1);
+		stateDEVICE_control_1 = !stateDEVICE_control_1;
+		JsonDoc_SendToMQTT["button_1"] = stateDEVICE_control_1;
+		JsonDoc_SendToMQTT["button_2"] = stateDEVICE_control_2;
+		serializeJson(JsonDoc_SendToMQTT, SendToMQTT);
+		SendToMQTT.toCharArray(payload_SendToMQTT, SendToMQTT.length() + 1);
+		client.publish(CA_SW2, payload_SendToMQTT, true);
+	}
+
+	if (check_Button_2)
+	{
+		digitalWrite(stateLED_control_2, stateDEVICE_control_2);
+		digitalWrite(control_2, !stateDEVICE_control_2);
+		stateDEVICE_control_2 = !stateDEVICE_control_2;
+		JsonDoc_SendToMQTT["button_1"] = stateDEVICE_control_1;
+		JsonDoc_SendToMQTT["button_2"] = stateDEVICE_control_2;
+		serializeJson(JsonDoc_SendToMQTT, SendToMQTT);
+		SendToMQTT.toCharArray(payload_SendToMQTT, SendToMQTT.length() + 1);
+		client.publish(CA_SW2, payload_SendToMQTT, true);
+	}
 }
