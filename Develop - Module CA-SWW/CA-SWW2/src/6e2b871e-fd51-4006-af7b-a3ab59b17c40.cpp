@@ -2,7 +2,6 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <Ticker.h>
-#include <ArduinoJson.h>
 
 /*
 * @file     6e2b871e-fd51-4006-af7b-a3ab59b17c40.ino
@@ -27,7 +26,9 @@ const char *ssid = "username wifi";
 const char *password = "password wifi";
 
 //Information of the communication topic
-const char *CA_SW2 = "6e2b871e-fd51-4006-af7b-a3ab59b17c40";
+//Change this when uploading for a new product  [43] = 1/2
+const char *CA_SW2_1 = "b36e333e-3800-4450-84cd-6f90e7e0f721/button1";
+const char *CA_SW2_2 = "b36e333e-3800-4450-84cd-6f90e7e0f721/button2";
 
 //Config MQTT broker information:
 const char *mqtt_server = "chika.gq";
@@ -173,7 +174,7 @@ int isButton_Click(int GPIO_to_read)
 	int out = 0;
 	unsigned int timer;
 	timer = millis();
-	while (digitalRead(GPIO_to_read) == HIGH)
+	while (digitalRead(GPIO_to_read) == LOW)
 	{
 		delay(10);
 		if (millis() - timer > longPressTime)
@@ -190,20 +191,38 @@ int isButton_Click(int GPIO_to_read)
 //Callback:
 void callback(char *topic, byte *payload, unsigned int length)
 {
-	// for (unsigned int i = 0; i < length; i++)
-	// {
-	// 	Serial.print((char)payload[i]);
-	// }
-	StaticJsonDocument<200> JsonDoc_MQTT;
-	deserializeJson(JsonDoc_MQTT, payload);
+	String payload_toStr;
+	for (unsigned int i = 0; i < length; i++)
+	{
+		payload_toStr += (char)payload[i];
+	}
 
-	stateDEVICE_control_1 = JsonDoc_MQTT["button_1"];
-	stateDEVICE_control_2 = JsonDoc_MQTT["button_2"];
-
-	digitalWrite(control_1, stateDEVICE_control_1);
-	digitalWrite(stateLED_control_1, !stateDEVICE_control_1);
-	digitalWrite(control_2, stateDEVICE_control_2);
-	digitalWrite(stateLED_control_2, !stateDEVICE_control_2);
+	if (String(topic).equals(CA_SW2_1))
+	{
+		if (payload_toStr == "true")
+		{
+			stateDEVICE_control_1 = true;
+		}
+		else if (payload_toStr == "false")
+		{
+			stateDEVICE_control_1 = false;
+		}
+		digitalWrite(control_1, stateDEVICE_control_1);
+		digitalWrite(stateLED_control_1, stateDEVICE_control_1);
+	}
+	else if (String(topic).equals(CA_SW2_2))
+	{
+		if (payload_toStr == "true")
+		{
+			stateDEVICE_control_2 = true;
+		}
+		else if (payload_toStr == "false")
+		{
+			stateDEVICE_control_2 = false;
+		}
+		digitalWrite(control_2, stateDEVICE_control_2);
+		digitalWrite(stateLED_control_2, stateDEVICE_control_2);
+	}
 }
 
 /**********************************************************************************
@@ -227,31 +246,24 @@ void reconnect_mqtt()
 		check_Button_1 = isButton_Click(button_1);
 		if (check_Button_1)
 		{
-			// Serial.println("\nButton 1 - Clicked!");
-			digitalWrite(stateLED_control_1, stateDEVICE_control_1);
-			digitalWrite(control_1, !stateDEVICE_control_1);
-
 			stateDEVICE_control_1 = !stateDEVICE_control_1;
-			// Serial.print("Relay 1 change state to: ");
-			// Serial.print(stateDEVICE_control_1);
+			digitalWrite(stateLED_control_1, stateDEVICE_control_1);
+			digitalWrite(control_1, stateDEVICE_control_1);
 		}
 
 		check_Button_2 = isButton_Click(button_2);
 		if (check_Button_2)
 		{
-			// Serial.println("\nButton 2 - Clicked!");
-			digitalWrite(stateLED_control_2, stateDEVICE_control_2);
-			digitalWrite(control_2, !stateDEVICE_control_2);
-
 			stateDEVICE_control_2 = !stateDEVICE_control_2;
-			// Serial.print("Relay 2 change state to: ");
-			//Serial.print(stateDEVICE_control_2);
+			digitalWrite(stateLED_control_2, stateDEVICE_control_2);
+			digitalWrite(control_2, stateDEVICE_control_2);
 		}
 
 		if (client.connect(clientId.c_str(), mqtt_user, mqtt_pass))
 		{
-			// Serial.println("Connected");
-			client.subscribe(CA_SW2);
+			Serial.println("Connected");
+			client.subscribe(CA_SW2_1);
+			client.subscribe(CA_SW2_2);
 		}
 		else
 		{
@@ -314,35 +326,38 @@ void loop()
 			client.loop();
 	}
 
-	StaticJsonDocument<200> JsonDoc_SendToMQTT;
-	String SendToMQTT;
-	char payload_SendToMQTT[200];
-
-	JsonDoc_SendToMQTT["product_id"] = CA_SW2;
 	boolean check_Button_1 = isButton_Click(button_1);
 	boolean check_Button_2 = isButton_Click(button_2);
 
 	if (check_Button_1)
 	{
-		digitalWrite(stateLED_control_1, stateDEVICE_control_1);
-		digitalWrite(control_1, !stateDEVICE_control_1);
 		stateDEVICE_control_1 = !stateDEVICE_control_1;
-		JsonDoc_SendToMQTT["button_1"] = stateDEVICE_control_1;
-		JsonDoc_SendToMQTT["button_2"] = stateDEVICE_control_2;
-		serializeJson(JsonDoc_SendToMQTT, SendToMQTT);
-		SendToMQTT.toCharArray(payload_SendToMQTT, SendToMQTT.length() + 1);
-		client.publish(CA_SW2, payload_SendToMQTT, true);
+		digitalWrite(stateLED_control_1, stateDEVICE_control_1);
+		digitalWrite(control_1, stateDEVICE_control_1);
+		
+		if (stateDEVICE_control_1)
+		{
+			client.publish(CA_SW2_1, "true", true);
+		}	
+		else
+		{
+			client.publish(CA_SW2_1, "false", true);
+		}
 	}
 
 	if (check_Button_2)
 	{
-		digitalWrite(stateLED_control_2, stateDEVICE_control_2);
-		digitalWrite(control_2, !stateDEVICE_control_2);
 		stateDEVICE_control_2 = !stateDEVICE_control_2;
-		JsonDoc_SendToMQTT["button_1"] = stateDEVICE_control_1;
-		JsonDoc_SendToMQTT["button_2"] = stateDEVICE_control_2;
-		serializeJson(JsonDoc_SendToMQTT, SendToMQTT);
-		SendToMQTT.toCharArray(payload_SendToMQTT, SendToMQTT.length() + 1);
-		client.publish(CA_SW2, payload_SendToMQTT, true);
+		digitalWrite(stateLED_control_2, stateDEVICE_control_2);
+		digitalWrite(control_2, stateDEVICE_control_2);
+		
+		if (stateDEVICE_control_2)
+		{
+			client.publish(CA_SW2_2, "true", true);
+		}	
+		else
+		{
+			client.publish(CA_SW2_2, "false", true);
+		}
 	}
 }
