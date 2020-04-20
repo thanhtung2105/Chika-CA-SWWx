@@ -1,34 +1,28 @@
-#include <Arduino.h>
-#include <ESP8266WiFi.h>
-#include <PubSubClient.h>
-#include <Ticker.h>
-
 /*
 * @file     6e2b871e-fd51-4006-af7b-a3ab59b17c40.ino
 * @proc_id  6e2b871e-fd51-4006-af7b-a3ab59b17c40
 * @author   Thanh Tung Phan
-* @brief    Source code for the second Chika Smart Switch - CA-SWW2
+* @brief    Source code for the second Chika Smart Switch (2 buttons) - CA-SW2
 * @corp     Chika Corporation
-* @last-mod Saturday, 4th April, 2020
+* @last-mod Thursday, 9th April, 2020
 */
 
 /*******************************************************************************
  *  INCLUDES
  ******************************************************************************/
-
-Ticker ticker;
+#include <Arduino.h>
+#include <ESP8266WiFi.h>
+#include <PubSubClient.h>
+#include <Ticker.h>
 
 /*******************************************************************************
  *  VALUE DEFINITION
  ******************************************************************************/
-//Wifi information - Just use for test wifi of module when SmartConfig meet failure
-const char *ssid = "username wifi";
-const char *password = "password wifi";
 
 //Information of the communication topic
 //Change this when uploading for a new product  [43] = 1/2
-const char *CA_SW2_1 = "b36e333e-3800-4450-84cd-6f90e7e0f721/button1";
-const char *CA_SW2_2 = "b36e333e-3800-4450-84cd-6f90e7e0f721/button2";
+const char *CA_SW2_1 = "6e2b871e-fd51-4006-af7b-a3ab59b17c40/button1";
+const char *CA_SW2_2 = "6e2b871e-fd51-4006-af7b-a3ab59b17c40/button2";
 
 //Config MQTT broker information:
 const char *mqtt_server = "chika.gq";
@@ -68,6 +62,11 @@ const char *mqtt_pass = "2502";
  * @PIN_22 1    //GPIO1 - U0TXD - SPI_CS1 - Use if necessary (sometime it affects to setup())
  * 
 *************************************************************************************************/
+Ticker ticker;		//Ticker for SmartConfig signal
+
+//Declare for MQTT - Wifi ESP12F:
+WiFiClient esp_12F;
+PubSubClient client(esp_12F);
 
 int button_1 = 13; //@PIN_7
 int button_2 = 12; //@PIN_6
@@ -83,27 +82,13 @@ boolean stateDEVICE_control_1 = false;
 boolean stateDEVICE_control_2 = false;
 boolean smartConfigStart = false;
 
-unsigned int longPressTime = 6000;
+unsigned int longPressTime = 6000;		//The holding time to start SmartConfig
 
 /*******************************************************************************
  * @func    Setup range
  *
  * @brief   All of needed function for setup
  *******************************************************************************/
-//Setup Wifi:
-void setup_Wifi()
-{
-	delay(100);
-	WiFi.begin(ssid, password);
-	while (WiFi.status() != WL_CONNECTED)
-	{
-		delay(500);
-	}
-}
-
-//Setup MQTT - Wifi ESP12F:
-WiFiClient esp_12F;
-PubSubClient client(esp_12F);
 
 //------------- NEEDED FUNCTIONS -------------
 
@@ -188,7 +173,7 @@ int isButton_Click(int GPIO_to_read)
 	return out;
 }
 
-//Callback:
+//Callback - func for receiving message from MQTT:
 void callback(char *topic, byte *payload, unsigned int length)
 {
 	String payload_toStr;
@@ -197,6 +182,7 @@ void callback(char *topic, byte *payload, unsigned int length)
 		payload_toStr += (char)payload[i];
 	}
 
+	// Checking button & controlling:
 	if (String(topic).equals(CA_SW2_1))
 	{
 		if (payload_toStr == "true")
@@ -243,6 +229,7 @@ void reconnect_mqtt()
 		clientId += String(random(0xffff), HEX);
 		Serial.println(clientId);
 
+		//Also check button clicking to control offline linked device
 		check_Button_1 = isButton_Click(button_1);
 		if (check_Button_1)
 		{
@@ -294,8 +281,6 @@ void setup()
 	pinMode(stateDEVICE_control_1, OUTPUT);
 	pinMode(stateDEVICE_control_2, OUTPUT);
 
-	//  setup_Wifi();
-
 	digitalWrite(stateLED_control_1, HIGH);
 	digitalWrite(stateLED_control_2, HIGH);
 	// Serial.println("WIFI CONNECTED");
@@ -308,12 +293,12 @@ void setup()
 	client.setCallback(callback);
 }
 
+
 /*************************************     Main Loop    ******************************************
  * @desc: process the physical touch and send request to Broker.
  * @para: none
  * 
 *************************************************************************************************/
-//------------- MAIN LOOP -------------
 void loop()
 {
 	if (WiFi.status() == WL_CONNECTED)
