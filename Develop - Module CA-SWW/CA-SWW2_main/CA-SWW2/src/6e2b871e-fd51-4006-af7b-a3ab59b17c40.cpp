@@ -4,7 +4,7 @@
 * @author   Thanh Tung Phan
 * @brief    Source code for the second Chika Smart Switch (2 buttons) - CA-SW2
 * @corp     Chika Corporation
-* @last-mod Thursday, 9th April, 2020
+* @last-mod Thursday, 30th April, 2020
 */
 
 /*******************************************************************************
@@ -18,14 +18,11 @@
 /*******************************************************************************
  *  VALUE DEFINITION
  ******************************************************************************/
-//Wifi information - Just use for test wifi of module when SmartConfig meet failure
-const char *ssid = "username wifi";
-const char *password = "password wifi";
 
 //Information of the communication topic
 //Change this when uploading for a new product  [43] = 1/2
-const char *CA_SW2_1 = "b36e333e-3800-4450-84cd-6f90e7e0f721/button1";
-const char *CA_SW2_2 = "b36e333e-3800-4450-84cd-6f90e7e0f721/button2";
+const char *CA_SW2_1 = "6e2b871e-fd51-4006-af7b-a3ab59b17c40/button1";
+const char *CA_SW2_2 = "6e2b871e-fd51-4006-af7b-a3ab59b17c40/button2";
 
 //Config MQTT broker information:
 const char *mqtt_server = "chika.gq";
@@ -92,16 +89,6 @@ unsigned int longPressTime = 6000;		//The holding time to start SmartConfig
  *
  * @brief   All of needed function for setup
  *******************************************************************************/
-//Setup Wifi:
-void setup_Wifi()
-{
-	delay(100);
-	WiFi.begin(ssid, password);
-	while (WiFi.status() != WL_CONNECTED)
-	{
-		delay(500);
-	}
-}
 
 //------------- NEEDED FUNCTIONS -------------
 
@@ -293,8 +280,6 @@ void setup()
 	pinMode(stateLED_control_2, OUTPUT);
 	pinMode(stateDEVICE_control_1, OUTPUT);
 	pinMode(stateDEVICE_control_2, OUTPUT);
-
-	//  setup_Wifi();
 
 	digitalWrite(stateLED_control_1, HIGH);
 	digitalWrite(stateLED_control_2, HIGH);
