@@ -12,7 +12,7 @@
  ******************************************************************************/
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
-#include <PubSubClient.h>
+#include <PubSubClient.h>			//MQTT library
 #include <Ticker.h>
 
 /*******************************************************************************
@@ -20,7 +20,7 @@
  ******************************************************************************/
 
 //Information of the communication topic
-//Change this when uploading for a new product  [43] = 1/2
+//Change this when uploading for a new product 
 const char *CA_SW2_1 = "6e2b871e-fd51-4006-af7b-a3ab59b17c40/button1";
 const char *CA_SW2_2 = "6e2b871e-fd51-4006-af7b-a3ab59b17c40/button2";
 
