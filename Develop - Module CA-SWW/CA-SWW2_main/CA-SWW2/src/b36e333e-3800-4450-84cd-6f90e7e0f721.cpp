@@ -20,7 +20,7 @@
  ******************************************************************************/
 
 //Information of the communication topic
-//Change this when uploading for a new product  [43] = 1/2
+//Change this when uploading for a new product 
 const char *CA_SW2_1 = "b36e333e-3800-4450-84cd-6f90e7e0f721/button1";
 const char *CA_SW2_2 = "b36e333e-3800-4450-84cd-6f90e7e0f721/button2";
 
