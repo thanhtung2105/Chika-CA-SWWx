@@ -1,0 +1,9 @@
+1. Mua thiết bị về - lắp đặt thiết bị như hướng dẫn.
+2. Sau khi lắp đặt có thể sử dụng được ngay như các loại công tắc thông thường. (Chưa thực hiện được)
+3. Thời gian để công tắc tự kết nối wifi trước đó là 8s. Nếu trong 8s không kết nối được wifi, công tắc
+sẽ rơi vào chế độ SmartConfig để tiến hành thiết lập, lúc này đèn 2 công tắc sáng tắt xen kẽ nhau liên
+tục.
+4. Khi kết nối mạng thành công, đèn 2 công tắc đồng thời chuyển sang đỏ báo công tắc đã hoạt động
+bình thường. Nếu không thành công thì đèn 2 công tắc sẽ sáng tắt xen kẽ chậm hơn trong 3s để người 
+dùng tiến hành SmartConfig trở lại.
+
